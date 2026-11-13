@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<!--
+  index.html  -  die ganze Seite in einer Datei.
+  Texte stehen NICHT hier, sondern in js/translations.js.
+  Jedes Element mit data-i18n="schlüssel" bekommt seinen Text von dort.
+  Bilder werden vom Skript js/main.js automatisch gesucht (siehe LIESMICH.md).
+-->
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Titel und Beschreibung werden von main.js je nach Sprache ersetzt.
+       Der Text hier ist nur ein Startwert (und für Suchmaschinen). -->
+  <title>Daniel Lucas Works</title>
+  <meta name="description" content="Illustration, Charaktere, Branding – Luxemburg.">
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===================== KOPFZEILE / NAVIGATION ===================== -->
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#top" aria-label="Daniel Lucas Works">
+        <img src="images/logo.svg" alt="" width="24" height="37">
+        <span>Daniel Lucas Works</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Navigation">
+        <a href="#portfolio" data-i18n="nav.portfolio"></a>
+        <a href="#manga"     data-i18n="nav.manga"></a>
+        <a href="#services"  data-i18n="nav.services"></a>
+        <a href="#about"     data-i18n="nav.about"></a>
+        <!-- Shop: bleibt versteckt, bis in js/config.js eine shopUrl steht -->
+        <a href="#" id="nav-shop" data-i18n="nav.shop" hidden></a>
+        <a href="#contact"   data-i18n="nav.contact"></a>
+      </nav>
+
+      <!-- Sprachumschalter: main.js liest data-lang -->
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button type="button" data-lang="de">DE</button>
+        <button type="button" data-lang="fr">FR</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ============================ HERO ============================ -->
+    <section class="hero deco deco-a">
+      <div class="wrap hero-inner">
+        <div class="hero-text">
+          <p class="eyebrow" data-i18n="hero.eyebrow"></p>
+          <h1 data-i18n="hero.title"></h1>
+          <p class="lead" data-i18n="hero.text"></p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="#contact"   data-i18n="hero.cta"></a>
+            <a class="btn btn-outline" href="#portfolio" data-i18n="hero.cta2"></a>
+          </div>
+        </div>
+        <!-- data-slot="hero"  ->  das Skript sucht images/hero.webp|jpg|jpeg|png -->
+        <div class="slot slot-hero" data-slot="hero" data-alt="hero.alt"></div>
+      </div>
+    </section>
+
+    <!-- ========================= PORTFOLIO ========================== -->
+    <section id="portfolio" class="section section-light">
+      <div class="wrap">
+        <h2 data-i18n="portfolio.title"></h2>
+        <!-- Filterknöpfe und Bilder werden komplett von main.js erzeugt -->
+        <div class="filters" id="filters"></div>
+        <div class="gallery" id="gallery"></div>
+
+        <!-- Blätterleiste: erscheint nur, wenn es mehr Werke gibt als perPage (config.js) -->
+        <nav class="pager" id="pager" aria-label="Pagination" hidden>
+          <button type="button" id="pager-prev">‹</button>
+          <span id="pager-label" aria-live="polite"></span>
+          <button type="button" id="pager-next">›</button>
+        </nav>
+      </div>
+    </section>
+
+    <!-- =========================== LEISTUNGEN ======================= -->
+    <section id="services" class="section deco deco-b">
+      <div class="wrap">
+        <h2 data-i18n="services.title"></h2>
+        <p class="lead" data-i18n="services.intro"></p>
+        <div class="cards">
+          <article class="card">
+            <h3 data-i18n="services.p1.title"></h3>
+            <p  data-i18n="services.p1.text"></p>
+            <p class="muted" data-i18n="services.meta"></p>
+            <p class="price" data-i18n="services.price"></p>
+          </article>
+          <article class="card">
+            <h3 data-i18n="services.p2.title"></h3>
+            <p  data-i18n="services.p2.text"></p>
+            <p class="muted" data-i18n="services.meta"></p>
+            <p class="price" data-i18n="services.price"></p>
+          </article>
+          <article class="card">
+            <h3 data-i18n="services.p3.title"></h3>
+            <p  data-i18n="services.p3.text"></p>
+            <p class="muted" data-i18n="services.meta"></p>
+            <p class="price" data-i18n="services.price"></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== MANGA  +  ÜBER MICH ===================== -->
+    <section class="section section-paper">
+      <div class="wrap two-col">
+
+        <div id="manga" class="col">
+          <p class="eyebrow eyebrow-dark" data-i18n="manga.eyebrow"></p>
+          <h2 data-i18n="manga.title"></h2>
+          <p data-i18n="manga.text"></p>
+          <!-- Bilder manga-01, manga-02 ... werden automatisch eingefügt -->
+          <div class="manga-grid" id="manga-grid"></div>
+          <p><a class="text-link" id="manga-link" href="#" data-i18n="manga.link"></a></p>
+        </div>
+
+        <div id="about" class="col">
+          <p class="eyebrow eyebrow-dark" data-i18n="about.eyebrow"></p>
+          <h2 data-i18n="about.title"></h2>
+          <p data-i18n="about.text"></p>
+          <div class="badges">
+            <span class="badge" data-i18n="about.badge1"></span>
+            <span class="badge" data-i18n="about.badge2"></span>
+          </div>
+          <!-- images/about.jpg -->
+          <div class="slot slot-about" data-slot="about" data-alt="about.alt"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================ KONTAKT ========================= -->
+    <section id="contact" class="section deco deco-a">
+      <div class="wrap two-col">
+        <div class="col">
+          <h2 data-i18n="contact.title"></h2>
+          <p class="lead" data-i18n="contact.text"></p>
+          <p><span data-i18n="contact.or"></span> <a class="text-link-light" id="mail-link" href="#"></a></p>
+        </div>
+
+        <!-- Die Adresse (action) setzt main.js aus js/config.js -->
+        <form class="col form" id="contact-form" method="POST">
+          <label for="f-name" data-i18n="contact.name"></label>
+          <input id="f-name" name="name" type="text" required autocomplete="name">
+
+          <label for="f-email" data-i18n="contact.email"></label>
+          <input id="f-email" name="email" type="email" required autocomplete="email">
+
+          <label for="f-type" data-i18n="contact.type"></label>
+          <input id="f-type" name="projektart" type="text" data-i18n-placeholder="contact.type.ph">
+
+          <label for="f-msg" data-i18n="contact.message"></label>
+          <textarea id="f-msg" name="nachricht" rows="5" required></textarea>
+
+          <!-- Honigtopf gegen Spam-Roboter: Menschen sehen dieses Feld nicht -->
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+          <!-- Sprache des Besuchers (main.js füllt das aus) -->
+          <input type="hidden" name="sprache" id="f-lang" value="de">
+
+          <button class="btn btn-primary" type="submit" data-i18n="contact.send"></button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================= FOOTER ============================ -->
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© <span id="year"></span> Daniel Lucas Works · <span data-i18n="footer.rights"></span></p>
+      <!-- Links werden aus js/config.js erzeugt -->
+      <nav class="social" id="social" aria-label="Social"></nav>
+    </div>
+  </footer>
+
+  <!-- ========================== LIGHTBOX ============================ -->
+  <!-- Grosse Ansicht eines Portfolio-Bildes (<dialog> kann der Browser selbst) -->
+  <dialog id="lightbox" class="lightbox">
+    <button type="button" class="lb-close" id="lb-close" data-i18n-aria="lightbox.close">×</button>
+    <img id="lb-img" alt="">
+    <!-- Kategorie (klein), Titel und Beschreibung des Werks -->
+    <div class="lb-info">
+      <p class="lb-cat" id="lb-cat"></p>
+      <h3 id="lb-title"></h3>
+      <p id="lb-caption"></p>
+    </div>
+  </dialog>
+
+  <!-- Reihenfolge ist wichtig: erst Einstellungen und Texte, dann das Hauptskript -->
+  <script src="js/config.js"></script>
+  <script src="js/translations.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
