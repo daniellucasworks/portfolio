@@ -182,16 +182,18 @@ window.CONTENT = {
       "file": "poster-01.webp",
       "images": [],
       "title": {
-        "de": "Shoto von MHA beim Power-up",
-        "fr": "",
-        "en": ""
+        "de": "Shoto von MHA Wallpaper",
+        "fr": "Shoto de MHA fond d‘écran",
+        "en": "Shoto from MHA Wallpaper"
       },
       "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
+        "de": "Dieses bild war mein erstes Clip Studio Paint Bild. Universität ausgeschlossen ist dies das erste bild das Ich digital angefertigt habe. Dies auf an frage eines Freundes der Shoto von My Hero Academia sehr mag! Ich schenkte im das als Händy Background",
+        "fr": "Cette image a été ma première image Clip Studio Paint. Hormis l’université, c’est le premier dessin que j’ai réalisé numériquement. C’est à la demande d’un ami qui aime beaucoup Shoto de My Hero Academia ! Je lui ai offert comme fond d’écran de téléphone portable.",
+        "en": "This picture was my first Clip Studio Paint picture. Not counting university, this is the first picture I've created digitally. I made it at the request of a friend who really likes Shoto from My Hero Academia! I gave it to him as a cell phone background."
       },
-      "links": {},
+      "links": {
+        "deviantart": "https://www.deviantart.com/daniellucasworks/art/260730-Shoto-1390034333"
+      },
       "inquiry": true
     },
     {
@@ -201,15 +203,17 @@ window.CONTENT = {
       "images": [],
       "title": {
         "de": "Fern von Frieren - Stolzepose",
-        "fr": "",
-        "en": ""
+        "fr": "Fern de Frieren - pose fière",
+        "en": "Fern from Frieren – Prideful Stance"
       },
       "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
+        "de": "Ich übe täglich und zu dieser zeit war ich beschäftigt the feminine Anatomie zu studieren. Dabei dachte ich mir vermiche ich einige Referenzen. Die eine Referenz war eine frau in der selben pose wie Fern und die andere Referenz ist Fern von dem Anime Frieren.",
+        "fr": "Je m’entraîne tous les jours et, à cette époque, j’étais occupé à étudier l’anatomie féminine. Ce faisant, j’ai pensé que j’allais mélanger quelques références. L’une des références était une femme dans la même pose que Fern, et l’autre référence était Fern de l’anime Frieren.",
+        "en": "I practice every day, and at that time, I was busy studying female anatomy. While doing so, I thought I'd mix in a few references. One reference was a woman in the same pose as Fern, and the other reference is Fern from the anime Frieren."
       },
-      "links": {},
+      "links": {
+        "deviantart": "https://www.deviantart.com/daniellucasworks/art/Prideful-Fern---Frieren-Fanart-1391503875"
+      },
       "inquiry": true
     },
     {
