@@ -16,6 +16,23 @@
   var LANGS = ['de', 'fr', 'en'];
   var lang = SITE.defaultLang;
 
+  /* Inhalte aus data/content.js (wird vom Admin geschrieben): Werke, Titel, Beschreibungen,
+     Social-Links, eigene Kategorien und Leistungen. Fehlt die Datei, funktioniert die Seite
+     wie vorher mit config.js und den Dateinamen. */
+  var CONTENT = window.CONTENT || null;
+  var manifest = !!(CONTENT && CONTENT.works && CONTENT.works.length);
+  if (CONTENT) {
+    SITE.titles = SITE.titles || {}; SITE.descriptions = SITE.descriptions || {}; SITE.links = SITE.links || {};
+    (CONTENT.works || []).forEach(function (w) {
+      SITE.titles[w.id] = w.title || {};
+      SITE.descriptions[w.id] = w.desc || {};
+      SITE.links[w.id] = w.links || {};
+    });
+    (CONTENT.categories || []).forEach(function (c) {
+      if (SITE.categories.indexOf(c.id) === -1) SITE.categories.push(c.id);
+    });
+  }
+
   /* =================================================================
      1) SPRACHE
      ================================================================= */
@@ -53,15 +70,17 @@
   // Fehlt er, zeigt die Seite den Dateinamen-Anfang mit grossem Anfangsbuchstaben ("Fanart")
   // und NICHT mehr den rohen Schlüssel "cat.fanart".
   function catLabel(cat) {
+    var own = CONTENT && (CONTENT.categories || []).filter(function (c) { return c.id === cat; })[0];
+    if (own && own.label && (own.label[lang] || own.label[SITE.defaultLang])) return own.label[lang] || own.label[SITE.defaultLang];
     if (has('cat.' + cat)) return t('cat.' + cat);
     return cat.charAt(0).toUpperCase() + cat.slice(1);
   }
 
   // Eingebaute Texte für die Blätterleiste (falls sie in translations.js fehlen)
   var UI = {
-    de: { prev: 'Vorherige Seite', next: 'Nächste Seite', page: 'Seite {n} von {total}' },
-    fr: { prev: 'Page précédente', next: 'Page suivante',  page: 'Page {n} sur {total}' },
-    en: { prev: 'Previous page',   next: 'Next page',       page: 'Page {n} of {total}' }
+    de: { prev: 'Vorherige Seite', next: 'Nächste Seite', page: 'Seite {n} von {total}', swipe: '‹ Wische nach links oder rechts zum Blättern ›' },
+    fr: { prev: 'Page précédente', next: 'Page suivante',  page: 'Page {n} sur {total}', swipe: '‹ Glisse vers la gauche ou la droite pour changer de page ›' },
+    en: { prev: 'Previous page',   next: 'Next page',       page: 'Page {n} of {total}', swipe: '‹ Swipe left or right to change page ›' }
   };
   function ui(key) { return has('portfolio.' + key) ? t('portfolio.' + key) : UI[lang][key]; }
 
@@ -79,7 +98,8 @@
 
     // Normale Texte:  <p data-i18n="hero.text">
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      el.textContent = t(el.dataset.i18n);
+      if (el.hasAttribute('data-rich')) renderRich(el, t(el.dataset.i18n));
+      else el.textContent = t(el.dataset.i18n);
     });
     // Platzhalter in Formularfeldern:  data-i18n-placeholder="..."
     document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
@@ -109,6 +129,7 @@
     if (langField) langField.value = lang;
 
     // Dinge, die nicht im HTML stehen, sondern vom Skript gebaut sind:
+    buildServices();
     refreshGalleryTexts();
     refreshPlaceholderHints();
 
@@ -215,19 +236,29 @@
   var currentFilter = 'all';
 
   async function loadPortfolio() {
-    // Alle Kategorien gleichzeitig durchsuchen. Pro Kategorie wird von 01 an
-    // gezählt und beim ersten fehlenden Bild aufgehört (Nummern lückenlos!).
-    var perCategory = await Promise.all(SITE.categories.map(async function (cat) {
-      var list = [];
-      for (var i = 1; i <= SITE.maxPerCategory; i++) {
-        var id = cat + '-' + pad(i);
-        var url = await findImage('images/portfolio/' + id);
-        if (!url) break;
-        list.push({ id: id, cat: cat, url: url });
-      }
-      return list;
-    }));
-    works = [].concat.apply([], perCategory);
+    if (manifest) {
+      // Liste aus data/content.js: Reihenfolge, Zusatzbilder usw. stehen dort (Admin pflegt sie)
+      works = CONTENT.works.map(function (c) {
+        var w = { id: c.id, cat: c.cat, url: 'images/portfolio/' + c.file, inquiry: c.inquiry !== false };
+        w.images = [w.url].concat((c.images || []).map(function (f) { return 'images/portfolio/' + f; }));
+        w.extrasPromise = Promise.resolve(w.images);
+        return w;
+      });
+    } else {
+      // Alle Kategorien gleichzeitig durchsuchen. Pro Kategorie wird von 01 an
+      // gezählt und beim ersten fehlenden Bild aufgehört (Nummern lückenlos!).
+      var perCategory = await Promise.all(SITE.categories.map(async function (cat) {
+        var list = [];
+        for (var i = 1; i <= SITE.maxPerCategory; i++) {
+          var id = cat + '-' + pad(i);
+          var url = await findImage('images/portfolio/' + id);
+          if (!url) break;
+          list.push({ id: id, cat: cat, url: url });
+        }
+        return list;
+      }));
+      works = [].concat.apply([], perCategory);
+    }
 
     var section = document.getElementById('portfolio');
     var gallery = document.getElementById('gallery');
@@ -278,6 +309,11 @@
       var img = document.createElement('img');
       img.src = w.url; img.loading = 'lazy'; img.decoding = 'async';
       btn.appendChild(img);
+      w.badge = document.createElement('span');          // "1/3" bei mehreren Bildern
+      w.badge.className = 'work-count';
+      w.badge.hidden = true;
+      btn.appendChild(w.badge);
+      if (w.images && w.images.length > 1) { w.badge.textContent = '1/' + w.images.length; w.badge.hidden = false; }
       btn.addEventListener('click', function () { openLightbox(w); });
       fig.appendChild(btn);
 
@@ -292,8 +328,25 @@
     document.getElementById('pager-prev').addEventListener('click', function () { goToPage(currentPage - 1); });
     document.getElementById('pager-next').addEventListener('click', function () { goToPage(currentPage + 1); });
 
+    // Wischen im Raster: nach links = nächste Seite, nach rechts = vorherige
+    var sx = 0, sy = 0, tracking = false;
+    gallery.addEventListener('touchstart', function (e) {
+      tracking = e.touches.length === 1;
+      if (tracking) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }
+    }, { passive: true });
+    gallery.addEventListener('touchend', function (e) {
+      if (!tracking) return;
+      tracking = false;
+      var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+      if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;   // eher senkrecht = normales Scrollen
+      var pages = Math.max(1, Math.ceil(filteredWorks().length / perPage()));
+      var target = currentPage + (dx < 0 ? 1 : -1);
+      if (target >= 1 && target <= pages) goToPage(target);
+    }, { passive: true });
+
     refreshGalleryTexts();
     setFilter('all');
+    works.forEach(loadExtras);        // Zusatzbilder suchen (für das "1/3"-Zeichen)
   }
 
   // Titel und Beschreibung eines Werks aus js/config.js (titles / descriptions)
@@ -343,6 +396,9 @@
 
     // Blätterleiste nur zeigen, wenn es mehr als eine Seite gibt
     document.getElementById('pager').hidden = pages <= 1;
+    var hint = document.getElementById('swipe-hint');
+    hint.hidden = pages <= 1;
+    hint.textContent = ui('swipe');
     document.getElementById('pager-prev').disabled = currentPage <= 1;
     document.getElementById('pager-next').disabled = currentPage >= pages;
     document.getElementById('pager-label').textContent =
@@ -366,6 +422,118 @@
   // --- Lightbox: grosse Ansicht mit Titel und Beschreibung ---
   var openWork = null;                      // welches Werk gerade offen ist
 
+  /* Text mit Links: [Text](https://adresse) wird zu einem anklickbaren Link.
+     Alles andere bleibt reiner Text (kein innerHTML, also sicher).
+     Nur http:// und https:// sind erlaubt. */
+  function setRichText(el, text) {
+    el.textContent = '';
+    var re = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+    var last = 0, m;
+    while ((m = re.exec(text)) !== null) {
+      if (m.index > last) addText(el, text.slice(last, m.index));
+      var a = document.createElement('a');
+      a.href = m[2];
+      a.textContent = m[1];
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      el.appendChild(a);
+      last = re.lastIndex;
+    }
+    if (last < text.length) addText(el, text.slice(last));
+  }
+
+  // Text einsetzen; ein einzelner Zeilenumbruch (\n) wird zu <br>
+  function addText(el, text) {
+    text.split('\n').forEach(function (line, i) {
+      if (i > 0) el.appendChild(document.createElement('br'));
+      if (line) el.appendChild(document.createTextNode(line));
+    });
+  }
+
+  /* Mehrere Absätze: eine Leerzeile im Text (\n\n) trennt Absätze.
+     Jeder Absatz darf Links der Form [Text](https://adresse) enthalten. */
+  function renderRich(el, text) {
+    el.textContent = '';
+    String(text || '').split(/\n\s*\n/).forEach(function (para) {
+      if (!para.trim()) return;
+      var p = document.createElement('p');
+      setRichText(p, para.trim());
+      el.appendChild(p);
+    });
+  }
+
+  // Anfrage-Knopf: Kontaktformular mit dem Betreff (Werk oder Leistung) vorbereiten
+  function prefillInquiry(subject) {
+    var f = document.getElementById('f-type');
+    if (f && subject) f.value = subject;
+    setTimeout(function () {
+      var msg = document.getElementById('f-msg');
+      if (msg) msg.focus({ preventScroll: true });
+    }, 700);
+  }
+
+  // Icon-Link zu einem Profil (Icon aus images/icons/<name>.svg)
+  var SOCIAL_NAMES = {
+    instagram: 'Instagram', behance: 'Behance', deviantart: 'DeviantArt',
+    artstation: 'ArtStation', etsy: 'Etsy', kofi: 'Ko-fi', patreon: 'Patreon',
+    tiktok: 'TikTok', youtube: 'YouTube', pinterest: 'Pinterest', threads: 'Threads',
+    facebook: 'Facebook', x: 'X', linkedin: 'LinkedIn', discord: 'Discord'
+  };
+  function isHttp(u) { return /^https?:\/\//i.test(u || ''); }
+  function makeIconLink(key, url) {
+    var a = document.createElement('a');
+    a.className = 'icon-link';
+    a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    var name = SOCIAL_NAMES[key] || key;
+    a.setAttribute('aria-label', name); a.title = name;
+    var img = document.createElement('img');
+    img.src = 'images/icons/' + key + '.svg'; img.alt = ''; img.width = 28; img.height = 28;
+    a.appendChild(img);
+    return a;
+  }
+
+  // Leistungskarten aus translations.js bauen: services.p1, p2, p3 ... und services.idea
+  function buildServices() {
+    var box = document.getElementById('services-cards');
+    if (!box) return;
+    box.textContent = '';
+    function card(title, text, meta, price, ctaText, highlight) {
+      var c = document.createElement('article');
+      c.className = 'card' + (highlight ? ' card-idea' : '');
+      var h = document.createElement('h3'); h.textContent = title; c.appendChild(h);
+      var p = document.createElement('p'); p.textContent = text; c.appendChild(p);
+      if (meta)  { var pm = document.createElement('p'); pm.className = 'muted'; pm.textContent = meta; c.appendChild(pm); }
+      if (price) { var pp = document.createElement('p'); pp.className = 'price'; pp.textContent = price; c.appendChild(pp); }
+      if (ctaText) {
+        var a = document.createElement('a');
+        a.className = 'btn btn-outline'; a.href = '#contact'; a.textContent = ctaText;
+        a.addEventListener('click', function () { prefillInquiry(title); });
+        c.appendChild(a);
+      }
+      box.appendChild(c);
+    }
+    // Neu: Leistungen aus data/content.js (vom Admin gepflegt)
+    if (CONTENT && CONTENT.services && CONTENT.services.length) {
+      CONTENT.services.forEach(function (s) {
+        card(pick(s.title), pick(s.text),
+             pick(s.meta) || (s.style === 'idea' ? '' : t('services.meta')),
+             pick(s.price),
+             s.inquiry === false ? '' : t('services.cta'),
+             s.style === 'idea');
+      });
+      return;
+    }
+    for (var n = 1; has('services.p' + n + '.title'); n++) {
+      var k = 'services.p' + n + '.';
+      card(t(k + 'title'), t(k + 'text'),
+           has(k + 'meta')  ? t(k + 'meta')  : t('services.meta'),
+           has(k + 'price') ? t(k + 'price') : t('services.price'));
+    }
+    if (has('services.idea.title')) {
+      card(t('services.idea.title'), t('services.idea.text'), '', '', t('services.idea.cta'), true);
+    }
+  }
+
   function fillLightbox(w) {
     var title = captionFor(w);
     var desc = descriptionFor(w);
@@ -374,18 +542,133 @@
     document.getElementById('lb-cat').textContent = title ? cat : '';
     document.getElementById('lb-cat').hidden = !title;
     document.getElementById('lb-title').textContent = title || cat;
-    var p = document.getElementById('lb-caption');
-    p.textContent = desc;
-    p.hidden = !desc;
+    var box = document.getElementById('lb-caption');
+    renderRich(box, desc || '');
+    box.hidden = !desc;
     document.getElementById('lb-img').alt = title || cat;
+
+    // Icon-Zeile "Dieses Werk auch auf:" (config.js: links)
+    var L = (SITE.links && SITE.links[w.id]) || {};
+    var icons = document.getElementById('lb-links-icons');
+    icons.textContent = '';
+    Object.keys(L).forEach(function (key) {
+      if (isHttp(L[key])) icons.appendChild(makeIconLink(key, L[key]));
+    });
+    document.getElementById('lb-links').hidden = !icons.children.length;
+    document.getElementById('lb-links-label').textContent = t('lightbox.seeon');
+
+    // Knopf "Anfrage zu diesem Werk"
+    var inq = document.getElementById('lb-inquire');
+    inq.textContent = t('lightbox.inquire');
+    inq.hidden = w.inquiry === false;
+  }
+
+  // --- Mehrere Bilder pro Werk: illustration-01-2, -3 ... werden im Hintergrund gesucht ---
+  function loadExtras(w) {
+    if (w.extrasPromise) return w.extrasPromise;
+    w.images = [w.url];
+    w.extrasPromise = (async function () {
+      var max = SITE.maxExtras > 0 ? SITE.maxExtras : 9;
+      for (var n = 2; n <= max + 1; n++) {
+        var u = await findImage('images/portfolio/' + w.id + '-' + n);
+        if (!u) break;
+        w.images.push(u);
+      }
+      if (w.badge && w.images.length > 1) {
+        w.badge.textContent = '1/' + w.images.length;
+        w.badge.hidden = false;
+      }
+      return w.images;
+    })();
+    return w.extrasPromise;
+  }
+
+  var imgIndex = 0;
+
+  function setZoom(on) {
+    var stage = document.getElementById('lb-stage');
+    stage.classList.toggle('zoomed', on);
+    if (!on) { stage.scrollLeft = 0; stage.scrollTop = 0; }
+  }
+
+  // Zeigt Bild Nummer i (0 = erstes) und markiert den passenden Punkt
+  function showImage(i) {
+    if (!openWork) return;
+    var list = openWork.images || [openWork.url];
+    imgIndex = (i + list.length) % list.length;
+    setZoom(false);
+    document.getElementById('lb-img').src = list[imgIndex];
+    document.querySelectorAll('#lb-dots button').forEach(function (d, n) {
+      d.setAttribute('aria-current', String(n === imgIndex));
+    });
+  }
+
+  // Pfeile und Punkte nur bei mehreren Bildern
+  function buildMedia(w) {
+    var list = w.images || [w.url];
+    var many = list.length > 1;
+    document.getElementById('lb-prev').hidden = !many;
+    document.getElementById('lb-next').hidden = !many;
+    var dots = document.getElementById('lb-dots');
+    dots.hidden = !many;
+    dots.textContent = '';
+    if (many) list.forEach(function (u, n) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', (n + 1) + ' / ' + list.length);
+      b.addEventListener('click', function () { showImage(n); });
+      dots.appendChild(b);
+    });
+    showImage(Math.min(imgIndex, list.length - 1));
   }
 
   function openLightbox(w) {
     var box = document.getElementById('lightbox');
     openWork = w;
-    document.getElementById('lb-img').src = w.url;
+    imgIndex = 0;
     fillLightbox(w);
+    buildMedia(w);                                   // sofort das Titelbild
+    loadExtras(w).then(function () {                 // Zusatzbilder, falls vorhanden
+      if (openWork === w) buildMedia(w);
+    });
+    document.documentElement.classList.add('lb-open');  // Seite hinter dem Bild sperren
     if (box.showModal) box.showModal();
+    document.getElementById('lb-stage').scrollTop = 0;
+    box.scrollTop = 0;
+  }
+
+  // Zoom per Klick, Pfeile, Tastatur und Wischen in der Grossansicht
+  function setupLightboxControls(box) {
+    var stage = document.getElementById('lb-stage');
+    var img = document.getElementById('lb-img');
+
+    // Klick aufs Bild: heranzoomen (an der Klickstelle), nochmal klicken: zurück
+    img.addEventListener('click', function (e) {
+      if (stage.classList.contains('zoomed')) { setZoom(false); return; }
+      var r = img.getBoundingClientRect();
+      var fx = (e.clientX - r.left) / r.width, fy = (e.clientY - r.top) / r.height;
+      setZoom(true);
+      stage.scrollLeft = fx * img.offsetWidth  - stage.clientWidth  / 2;
+      stage.scrollTop  = fy * img.offsetHeight - stage.clientHeight / 2;
+    });
+
+    document.getElementById('lb-prev').addEventListener('click', function () { showImage(imgIndex - 1); });
+    document.getElementById('lb-next').addEventListener('click', function () { showImage(imgIndex + 1); });
+    box.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft')  showImage(imgIndex - 1);
+      if (e.key === 'ArrowRight') showImage(imgIndex + 1);
+    });
+
+    // Wischen zwischen Bildern (nur wenn nicht gezoomt)
+    var sx = 0, sy = 0;
+    stage.addEventListener('touchstart', function (e) {
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    }, { passive: true });
+    stage.addEventListener('touchend', function (e) {
+      if (stage.classList.contains('zoomed') || !openWork) return;
+      var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) showImage(imgIndex + (dx < 0 ? 1 : -1));
+    }, { passive: true });
   }
 
   /* =================================================================
@@ -403,18 +686,30 @@
     mail.href = 'mailto:' + SITE.email;
     mail.textContent = SITE.email;
 
-    // Manga-Link zeigt auf Instagram
-    var mangaLink = document.getElementById('manga-link');
-    if (SITE.social.instagram) mangaLink.href = SITE.social.instagram; else mangaLink.hidden = true;
+    // Social-Icons unter dem Manga-Text (config.js: mangaSocials)
+    var ms = document.getElementById('manga-socials');
+    (SITE.mangaSocials || []).forEach(function (key) {
+      if (isHttp(SITE.social[key])) ms.appendChild(makeIconLink(key, SITE.social[key]));
+    });
+    ms.hidden = !ms.children.length;
+
+    // Burger-Menü (Tablet/Handy)
+    var burger = document.getElementById('burger');
+    var header = document.querySelector('.site-header');
+    function setMenu(open) {
+      header.classList.toggle('nav-open', open);
+      burger.setAttribute('aria-expanded', String(open));
+    }
+    burger.addEventListener('click', function () { setMenu(!header.classList.contains('nav-open')); });
+    document.querySelectorAll('.main-nav a').forEach(function (a) {
+      a.addEventListener('click', function () { setMenu(false); });
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+    document.addEventListener('click', function (e) { if (!header.contains(e.target)) setMenu(false); });
+    window.addEventListener('resize', function () { if (window.innerWidth > 1024) setMenu(false); });
 
     // Footer-Links zu den Profilen, mit Icon aus images/icons/<name>.svg.
     // Einträge ohne Adresse in config.js werden übersprungen.
-    var SOCIAL_NAMES = {
-      instagram: 'Instagram', behance: 'Behance', deviantart: 'DeviantArt',
-      artstation: 'ArtStation', etsy: 'Etsy', kofi: 'Ko-fi', patreon: 'Patreon',
-      tiktok: 'TikTok', youtube: 'YouTube', pinterest: 'Pinterest', threads: 'Threads',
-      facebook: 'Facebook', x: 'X', linkedin: 'LinkedIn', discord: 'Discord'
-    };
     var nav = document.getElementById('social');
     Object.keys(SITE.social).forEach(function (key) {
       var url = SITE.social[key];
@@ -438,8 +733,19 @@
 
     // Lightbox schliessen: Knopf oder Klick neben das Bild
     var box = document.getElementById('lightbox');
-    box.addEventListener('close', function () { openWork = null; });
+    box.addEventListener('close', function () {
+      openWork = null;
+      document.documentElement.classList.remove('lb-open');   // Seite darf wieder scrollen
+    });
     document.getElementById('lb-close').addEventListener('click', function () { box.close(); });
+    setupLightboxControls(box);
+    document.getElementById('lb-inquire').addEventListener('click', function () {
+      var w = openWork;
+      var subject = w ? (captionFor(w) || catLabel(w.cat)) : '';
+      box.close();
+      document.getElementById('contact').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      prefillInquiry(subject);
+    });
     box.addEventListener('click', function (e) { if (e.target === box) box.close(); });
 
     // Sprachknöpfe

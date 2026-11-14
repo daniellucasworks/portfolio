@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!--
+  admin.html  -  Dein privater Bereich zum Ändern der Webseite (ohne VS Code).
+  Er ist nur mit deinem GitHub-Token benutzbar. Ohne Token kann man hier nichts ändern.
+  Anleitung: ADMIN-ANLEITUNG.md
+-->
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin – Daniel Lucas Works</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin">
+
+  <!-- ============ LOGIN ============ -->
+  <main id="login" class="a-wrap a-narrow">
+    <img src="images/logo.svg" alt="" width="36" height="56">
+    <h1>Admin</h1>
+    <p>Melde dich mit deinem GitHub-Token an. Der Token bleibt nur in diesem Browser.</p>
+    <form id="login-form" autocomplete="off">
+      <label for="token">GitHub-Token</label>
+      <input id="token" type="password" placeholder="github_pat_…" required autocomplete="off" spellcheck="false">
+      <label class="check"><input type="checkbox" id="remember"> In diesem Browser angemeldet bleiben</label>
+      <button class="btn btn-primary" type="submit">Anmelden</button>
+    </form>
+    <p class="a-note" id="login-msg" role="alert"></p>
+    <p class="a-note">Noch keinen Token? Siehe <strong>ADMIN-ANLEITUNG.md</strong> im Website-Ordner (Schritt 1).</p>
+    <p><a href="index.html">← zur Webseite</a></p>
+  </main>
+
+  <!-- ============ APP ============ -->
+  <div id="app" hidden>
+    <header class="a-bar">
+      <div class="a-wrap a-bar-inner">
+        <strong class="a-title">Admin</strong>
+        <nav class="a-tabs" role="tablist">
+          <button type="button" role="tab" data-tab="portfolio" aria-selected="true">Portfolio</button>
+          <button type="button" role="tab" data-tab="services" aria-selected="false">Leistungen</button>
+        </nav>
+        <div class="a-bar-right">
+          <span id="who" class="a-note"></span>
+          <a href="index.html" target="_blank" rel="noopener">Webseite</a>
+          <button type="button" class="a-link" id="logout">Abmelden</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="a-wrap" id="panel"></main>
+
+    <!-- Veröffentlichen-Leiste -->
+    <div class="a-publish" id="publish" hidden>
+      <div class="a-wrap a-publish-inner">
+        <span id="publish-info">Ungespeicherte Änderungen</span>
+        <button type="button" class="btn btn-outline" id="discard">Verwerfen</button>
+        <button type="button" class="btn btn-primary" id="publish-btn">Veröffentlichen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Editor (Werk oder Leistung) -->
+  <dialog id="editor" class="a-dialog"></dialog>
+
+  <div id="toasts" aria-live="polite"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/translations.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

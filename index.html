@@ -28,6 +28,8 @@
         <span>Daniel Lucas Works</span>
       </a>
 
+      <!-- Menü: auf dem Desktop eine Zeile, auf Tablet/Handy klappt es per Burger-Knopf auf -->
+      <div class="header-menu" id="header-menu">
       <nav class="main-nav" aria-label="Navigation">
         <a href="#portfolio" data-i18n="nav.portfolio"></a>
         <a href="#manga"     data-i18n="nav.manga"></a>
@@ -44,6 +46,12 @@
         <button type="button" data-lang="fr">FR</button>
         <button type="button" data-lang="en">EN</button>
       </div>
+      </div>
+
+      <!-- Burger-Knopf (nur auf Tablet/Handy sichtbar): drei gleich lange Linien -->
+      <button type="button" class="burger" id="burger" aria-expanded="false" aria-controls="header-menu" data-i18n-aria="nav.menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
 
@@ -72,6 +80,8 @@
         <h2 data-i18n="portfolio.title"></h2>
         <!-- Filterknöpfe und Bilder werden komplett von main.js erzeugt -->
         <div class="filters" id="filters"></div>
+        <!-- Auf dem Handy: Hinweis zum Wischen (nur bei mehreren Seiten und Touch-Geräten) -->
+        <p class="swipe-hint" id="swipe-hint" hidden></p>
         <div class="gallery" id="gallery"></div>
 
         <!-- Blätterleiste: erscheint nur, wenn es mehr Werke gibt als perPage (config.js) -->
@@ -88,26 +98,8 @@
       <div class="wrap">
         <h2 data-i18n="services.title"></h2>
         <p class="lead" data-i18n="services.intro"></p>
-        <div class="cards">
-          <article class="card">
-            <h3 data-i18n="services.p1.title"></h3>
-            <p  data-i18n="services.p1.text"></p>
-            <p class="muted" data-i18n="services.meta"></p>
-            <p class="price" data-i18n="services.price"></p>
-          </article>
-          <article class="card">
-            <h3 data-i18n="services.p2.title"></h3>
-            <p  data-i18n="services.p2.text"></p>
-            <p class="muted" data-i18n="services.meta"></p>
-            <p class="price" data-i18n="services.price"></p>
-          </article>
-          <article class="card">
-            <h3 data-i18n="services.p3.title"></h3>
-            <p  data-i18n="services.p3.text"></p>
-            <p class="muted" data-i18n="services.meta"></p>
-            <p class="price" data-i18n="services.price"></p>
-          </article>
-        </div>
+        <!-- Karten werden von main.js aus translations.js gebaut (services.p1, p2, p3 ... + services.idea) -->
+        <div class="cards" id="services-cards"></div>
       </div>
     </section>
 
@@ -118,16 +110,18 @@
         <div id="manga" class="col">
           <p class="eyebrow eyebrow-dark" data-i18n="manga.eyebrow"></p>
           <h2 data-i18n="manga.title"></h2>
-          <p data-i18n="manga.text"></p>
+          <!-- data-rich: Leerzeile im Text = neuer Absatz -->
+          <div class="rich" data-i18n="manga.text" data-rich></div>
           <!-- Bilder manga-01, manga-02 ... werden automatisch eingefügt -->
           <div class="manga-grid" id="manga-grid"></div>
-          <p><a class="text-link" id="manga-link" href="#" data-i18n="manga.link"></a></p>
+          <!-- Social-Icons zum Manga (config.js: mangaSocials) -->
+          <div class="icon-links" id="manga-socials"></div>
         </div>
 
         <div id="about" class="col">
           <p class="eyebrow eyebrow-dark" data-i18n="about.eyebrow"></p>
           <h2 data-i18n="about.title"></h2>
-          <p data-i18n="about.text"></p>
+          <div class="rich" data-i18n="about.text" data-rich></div>
           <div class="badges">
             <span class="badge" data-i18n="about.badge1"></span>
             <span class="badge" data-i18n="about.badge2"></span>
@@ -160,7 +154,7 @@
           <input id="f-type" name="projektart" type="text" data-i18n-placeholder="contact.type.ph">
 
           <label for="f-msg" data-i18n="contact.message"></label>
-          <textarea id="f-msg" name="nachricht" rows="5" required></textarea>
+          <textarea id="f-msg" name="nachricht" rows="5" required data-i18n-placeholder="contact.message.ph"></textarea>
 
           <!-- Honigtopf gegen Spam-Roboter: Menschen sehen dieses Feld nicht -->
           <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
@@ -178,7 +172,10 @@
     <div class="wrap footer-inner">
       <p>© <span id="year"></span> Daniel Lucas Works · <span data-i18n="footer.rights"></span></p>
       <!-- Links werden aus js/config.js erzeugt -->
-      <nav class="social" id="social" aria-label="Social"></nav>
+      <div class="footer-links">
+        <a href="legal.html" id="legal-link" data-i18n="footer.legal"></a>
+        <nav class="social" id="social" aria-label="Social"></nav>
+      </div>
     </div>
   </footer>
 
@@ -186,18 +183,31 @@
   <!-- Grosse Ansicht eines Portfolio-Bildes (<dialog> kann der Browser selbst) -->
   <dialog id="lightbox" class="lightbox">
     <button type="button" class="lb-close" id="lb-close" data-i18n-aria="lightbox.close">×</button>
-    <img id="lb-img" alt="">
-    <!-- Kategorie (klein), Titel und Beschreibung des Werks -->
+    <!-- Bildbereich: Klick aufs Bild = Zoom. Bei mehreren Bildern Pfeile, Punkte und Wischen. -->
+    <div class="lb-media">
+      <div class="lb-stage" id="lb-stage"><img id="lb-img" alt=""></div>
+      <button type="button" class="lb-nav lb-prev" id="lb-prev" hidden>‹</button>
+      <button type="button" class="lb-nav lb-next" id="lb-next" hidden>›</button>
+    </div>
+    <div class="lb-dots" id="lb-dots" hidden></div>
+    <!-- Kategorie (klein), Titel, Beschreibung und Social-Icons des Werks -->
     <div class="lb-info">
       <p class="lb-cat" id="lb-cat"></p>
       <h3 id="lb-title"></h3>
-      <p id="lb-caption"></p>
+      <div class="rich" id="lb-caption"></div>
+      <div class="lb-links" id="lb-links" hidden>
+        <span id="lb-links-label"></span>
+        <div class="icon-links" id="lb-links-icons"></div>
+      </div>
+      <button type="button" class="btn btn-primary lb-inquire" id="lb-inquire"></button>
     </div>
   </dialog>
 
   <!-- Reihenfolge ist wichtig: erst Einstellungen und Texte, dann das Hauptskript -->
   <script src="js/config.js"></script>
   <script src="js/translations.js"></script>
+  <!-- Inhalte (Werke, Leistungen), vom Admin geschrieben. Fehlt die Datei, geht die Seite trotzdem. -->
+  <script src="data/content.js" onerror="void 0"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

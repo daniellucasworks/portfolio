@@ -1,6 +1,6 @@
-HIER KOMMEN DIE SCHRIFTEN HIN (selbst herunterladen, z. B. von fonts.google.com):
+FONTS fuer die Seite (Dateien liegen schon hier):
 
-  Righteous-Regular.woff2     (Titel)
-  DMSans-Variable.woff2       (Fliesstext)
+  Righteous-Regular.woff   (Titel)
+  DMSans-Variable.woff     (Fliesstext)
 
-Genau diese Dateinamen verwenden. Fehlen sie, nimmt der Browser Ersatzschriften.
+Original-Dateien (.ttf) brauchst du online nicht.

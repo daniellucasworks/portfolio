@@ -18,6 +18,18 @@ window.SITE = {
      sie sieht aus wie  https://formspree.io/f/abcdwxyz  */
   formEndpoint: 'https://formspree.io/f/mjywgyzo',
 
+
+  /* ANGABEN FÜR IMPRESSUM / DATENSCHUTZ (Seite legal.html).
+     Trage hier deine echten Daten ein. Sie erscheinen automatisch auf der Seite.
+     Leer gelassene Felder zeigt die Seite als [ … ] an, damit du sie nicht vergisst. */
+  legal: {
+    name:    'Daniel Lucas',                 // dein vollständiger Name
+    address: '',                             // Strasse und Nr., z. B. '12, rue Exemple'
+    city:    '',                             // z. B. 'L-1234 Luxembourg'
+    country: 'Luxembourg',
+    phone:   ''                              // optional, darf leer bleiben
+  },
+
   /* Deine Profile (erscheinen im Footer, mit Icon aus deiner Charta).
      Adresse eintragen = Icon erscheint. Leer lassen ('') = nichts wird gezeigt.
      Die Reihenfolge hier ist die Reihenfolge im Footer. */
@@ -56,7 +68,28 @@ window.SITE = {
   categories: ['illustration', 'charakter', 'branding', 'poster', 'gerahmte', 'sticker', 'portrait'],
 
   /* Wie viele Bilder pro Kategorie maximal gesucht werden. */
+  /* Werke pro Seite im Portfolio (darüber erscheint die Blätterleiste). */
+  perPage: 8,
+
   maxPerCategory: 40,
+
+  /* Mehrere Bilder pro Werk (wie bei Instagram-Karussells):
+     Lege zusätzliche Bilder mit  -2, -3, -4 ...  hinter den Namen:
+       illustration-01.webp  (Titelbild im Raster)
+       illustration-01-2.webp, illustration-01-3.webp  (weitere Bilder, z. B. Fortschritt)
+     In der Grossansicht erscheinen Pfeile, Punkte und man kann wischen.
+     Nummern ohne Lücke. Hier steht, wie viele Zusatzbilder maximal gesucht werden. */
+  maxExtras: 9,
+
+  /* Welche Profile unter dem Manga-Text als Icons erscheinen (Adressen aus "social"). */
+  mangaSocials: ['instagram', 'behance', 'deviantart'],
+
+  /* ADMIN (admin.html): Das Repository, in das der Admin speichert. */
+  github: { owner: 'daniellucasworks', repo: 'portfolio', branch: '' },   // branch leer = Standard-Branch
+
+  /* Für die Auto-Übersetzung im Admin (kostenloser Dienst MyMemory).
+     Optional eine E-Mail eintragen = höheres Tageslimit. Leer lassen ist ok. */
+  translateEmail: '',
 
   /* Wie viele Manga-Bilder (manga-01.jpg, manga-02.jpg ...) maximal. */
   maxManga: 6,
@@ -86,12 +119,27 @@ window.SITE = {
      'gerahmte-01': { de: 'UV-Painting: Goku Super-Saiyajin', fr: 'Peinture UV : Goku Super Saiyan', en: 'UV Painting: Goku Super Saiyan' },
      'gerahmte-02': { de: 'DBS Managa cover', fr: '', en: '' },
      'gerahmte-03': { de: 'SSJ3 Goku Rosé', fr: '', en: '' },
-     'gerahmte-04': { de: "Weihnachts Sticht als 'stainedglass effect'", fr: '', en: '' },
+     'gerahmte-04': { de: 'Weihnachts Sticht als „stainedglass effect“', fr: '', en: '' },
      'gerahmte-05': { de: 'Gabby und Pandy', fr: '', en: '' },
      'gerahmte-06': { de: 'Fröhlicher Cartoon Nicolaus', fr: '', en: '' },
      'sticker-01': { de: 'Handgemalte Pokémon-Sticker', fr: 'Stickers Pokémon peints à la main', en: 'Hand-Painted Pokémon Stickers' },
      'portrait-01': { de: 'Unsere Doggies ❤️', fr: 'Nos loulous ❤️', en: 'Our Doggos ❤️' },
   },
+  /* OPTIONAL: Wo man dieses Werk ausserdem sehen kann. Erscheint als Icon-Zeile
+     unter der Beschreibung in der Grossansicht (nur die Plattformen, die du einträgst).
+     Gleicher Schlüssel wie bei titles. Beispiel:
+       'illustration-01': {
+         instagram:  'https://www.instagram.com/p/XXXX/',
+         behance:    'https://www.behance.net/gallery/XXXX',
+         deviantart: 'https://www.deviantart.com/daniellucasworks/art/XXXX'
+       },
+     Möglich sind alle Namen aus "social" (instagram, behance, deviantart, artstation, ...). */
+  links: {
+    // 'illustration-01': { instagram: '', behance: '', deviantart: '' },
+  },
+
+  /* Mehrere Absätze in einer Beschreibung: eine Leerzeile im Text = neuer Absatz.
+     In Anführungszeichen schreibst du dafür \n\n, z. B.  de: 'Erster Absatz.\n\nZweiter Absatz.' */
   descriptions: {      // kurze Erklärung in der Grossansicht (Schlüssel wie bei titles)
     'illustration-01': {
       de: "Digitale Zeichnung in Clip Studio Paint, erstellt für den 49. Internationalen Illustrationswettbewerb, der von CSP organisiert wurde.",
