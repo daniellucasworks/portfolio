@@ -151,7 +151,7 @@ html { scroll-padding-top: 76px; scrollbar-gutter: stable; }
 /* Hero */
 .hero-inner { display: flex; flex-wrap: wrap; gap: 48px; align-items: center; padding-top: 64px; padding-bottom: 80px; }
 .hero-text { flex: 1 1 420px; min-width: 0; }
-.slot-hero { flex: 1 1 340px; min-width: 0; aspect-ratio: 4 / 5; }
+.slot-hero { flex: 1 1 340px; min-width: 0; aspect-ratio: 4 / 5; background: none;}
 
 /* Portfolio: Filterknöpfe + Raster */
 .filters { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 28px; }
