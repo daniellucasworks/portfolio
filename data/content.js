@@ -18,14 +18,19 @@ window.CONTENT = {
         "fr": "Dessin numérique réalisé dans Clip Studio Paint pour le 49e Concours international d'illustration organisé par CSP.",
         "en": "Digital drawing in Clip Studio Paint made for the 49th International Illustration Contest organised by CSP."
       },
-      "links": {},
-      "inquiry": true
+      "links": {
+        "instagram": "https://www.instagram.com/p/De9fEizCvUJ/?img_index=1",
+        "deviantart": "https://www.deviantart.com/daniellucasworks/art/EvilSoul-absorbing-Gargoyle---CSPcontest49-1402440732"
+      },
+      "inquiry": false
     },
     {
       "id": "illustration-02",
       "cat": "illustration",
       "file": "illustration-02.webp",
-      "images": [],
+      "images": [
+        "illustration-02-2.webp"
+      ],
       "title": {
         "de": "Blutiger Werwolf",
         "fr": "Loup-garou sanglant",
@@ -36,7 +41,10 @@ window.CONTENT = {
         "fr": "Je travaille sur un livre qui propose 500 sujets de dessin (500 mots choisis au hasard). Je suis tombé sur le mot « crocs » ; j'ai donc décidé de dessiner les crocs d'un loup-garou en train de bondir droit vers celui qui regarde l'image ! Je voulais vraiment que cette réalisation soit dynamique et percutante.",
         "en": "I'm working through a book with 500 drawing prompts (500 random words). The word I landed on was 'Fangs', so I decided to draw the fangs of a werewolf leaping right at the viewer! I really wanted this piece to look dynamic and badass."
       },
-      "links": {},
+      "links": {
+        "instagram": "https://www.instagram.com/p/Ded9nL8EXEC/?img_index=1",
+        "deviantart": "https://www.deviantart.com/daniellucasworks/art/Bloody-Werewolf-DanielLucasWorks-Style-1391496362"
+      },
       "inquiry": true
     },
     {
@@ -68,18 +76,24 @@ window.CONTENT = {
       "id": "charakter-02",
       "cat": "charakter",
       "file": "charakter-02.webp",
-      "images": [],
+      "images": [
+        "charakter-02-2.webp",
+        "charakter-02-3.webp"
+      ],
       "title": {
         "de": "Landepose Spiderman",
-        "fr": "",
-        "en": ""
+        "fr": "Posture d'atterrissage Spiderman",
+        "en": "Spiderman Landing Pose"
       },
       "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
+        "de": "In CSP erstellt und Bild 3 ist die Referenz (aus Pinterest).",
+        "fr": "Créé dans CSP et l’image 3 est la référence (Pinterest).",
+        "en": "Created in CSP, and Picture 3 is the reference(from Pinterest)."
       },
-      "links": {},
+      "links": {
+        "instagram": "https://www.instagram.com/p/DeotrPtipdf/?img_index=1",
+        "deviantart": "https://www.deviantart.com/daniellucasworks/art/Classic-Spidey-pose---Ref.Drawing-1399119602?file=1"
+      },
       "inquiry": true
     },
     {
@@ -97,7 +111,10 @@ window.CONTENT = {
         "fr": "",
         "en": ""
       },
-      "links": {},
+      "links": {
+        "instagram": "https://www.instagram.com/p/DWrXSJZihYM/",
+        "deviantart": "https://www.deviantart.com/daniellucasworks/art/My-OC---Hitaro-since-2014-till-now-(2026)-1400625117"
+      },
       "inquiry": true
     },
     {
@@ -107,15 +124,18 @@ window.CONTENT = {
       "images": [],
       "title": {
         "de": "Mein Original Charakter 2026",
-        "fr": "",
-        "en": ""
+        "fr": "Mon personnage original 2026",
+        "en": "My Original Character 2026"
       },
       "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
+        "de": "Drawn by hand on a A5 Paper.",
+        "fr": "Dessiné à la main sur une feuille A5.",
+        "en": "Drawn by hand on A5 paper."
       },
-      "links": {},
+      "links": {
+        "instagram": "https://www.instagram.com/stories/highlights/18206164177330559/",
+        "deviantart": "https://www.deviantart.com/daniellucasworks/art/My-OC---Hitaro-since-2014-till-now-(2026)-1400625117?file=2"
+      },
       "inquiry": true
     },
     {
@@ -140,34 +160,18 @@ window.CONTENT = {
       "id": "branding-02",
       "cat": "branding",
       "file": "branding-02.webp",
-      "images": [],
+      "images": [
+        "branding-02-2.webp"
+      ],
       "title": {
-        "de": "Real Constuction - v1 - Visiten Karte",
-        "fr": "",
-        "en": ""
+        "de": "Real Constuction - Baufirma - Visiten Karte",
+        "fr": "Real Constuction - Entreprise de construction - Carte de visite",
+        "en": "Real Construction – Construction Company – Business Card"
       },
       "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
-      },
-      "links": {},
-      "inquiry": true
-    },
-    {
-      "id": "branding-03",
-      "cat": "branding",
-      "file": "branding-03.webp",
-      "images": [],
-      "title": {
-        "de": "Real Constuction - v2 - Visiten Karte",
-        "fr": "",
-        "en": ""
-      },
-      "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
+        "de": "Potentielle visiten Karte für die Baufirma meiner Familie. Aktuell gibt es 2 Versiounen.(Projekt läuft noch)",
+        "fr": "Carte de visite potentielle pour l’entreprise de construction de ma famille. Il existe actuellement 2 versions. (Le projet est toujours en cours)",
+        "en": "Potential business card for my family's construction company. There are currently 2 versions. (Project still ongoing)"
       },
       "links": {},
       "inquiry": true
