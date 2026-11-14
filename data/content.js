@@ -43,18 +43,25 @@ window.CONTENT = {
       "id": "charakter-01",
       "cat": "charakter",
       "file": "charakter-01.webp",
-      "images": [],
+      "images": [
+        "charakter-01-2.webp",
+        "charakter-01-3.webp",
+        "charakter-01-4.webp"
+      ],
       "title": {
-        "de": "Hitaro – Triggered",
-        "fr": "Hitaro – Triggered",
-        "en": "Hitaro – Triggered"
+        "de": "Hitaro – Triggered - T-Shirt Design",
+        "fr": "Hitaro – Triggered - T-Shirt Design",
+        "en": "Hitaro – Triggered - T-Shirt Design"
       },
       "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
+        "de": "Für dieses T-Shirt-Design habe ich meinen Original Character (OC) Hitaro aus meinem kommenden Manga „Kongō no Kokoro : Listen to the Crystalsoul“ illustriert. Die Idee dahinter war, bereits frühzeitig erstes Fan-Merch zu entwerfen, für alle, denen meine Geschichte und der Charakter gefallen werden.\n\nDie Bilder zeigen den Entwicklungsprozess – von der Graustufen-Ausarbeitung bis zur finalen kolorierten Illustration – sowie das fertige, gedruckte Shirt.",
+        "fr": "Pour ce design de t-shirt, j'ai illustré mon personnage original (OC) Hitaro issu de mon prochain manga « Kongō no Kokoro : Listen to the Crystalsoul ». L'idée était de concevoir dès maintenant un premier produit dérivé (fan merch) pour celles et ceux qui apprécieront mon histoire et l'univers du personnage.\n\nLes images présentent les différentes étapes de création – du rendu en niveaux de gris à l'illustration finale en couleur – ainsi que le t-shirt imprimé.",
+        "en": "For this T-shirt design, I illustrated my original character (OC) Hitaro from my upcoming manga \"Kongō no Kokoro : Listen to the Crystalsoul\". The idea was to create early fan merch right from the start for future readers who enjoy my story and character.\n\nThe images showcase the process from the grayscale rendering to the final colored artwork, as well as the finished printed shirt."
       },
-      "links": {},
+      "links": {
+        "instagram": "https://www.instagram.com/p/DfVW2lCRSDK/",
+        "deviantart": "https://www.deviantart.com/daniellucasworks/art/Hitaro-Triggered--Kongo-no-Kokoro---Indimanga---DLW-1406321907"
+      },
       "inquiry": true
     },
     {
