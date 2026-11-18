@@ -30,6 +30,7 @@
   --graphite: #2B303B;  /* Graphite: Karten auf dunkel           */
   --papier:   #F7F7F9;  /* Papier: sehr helle Flächen            */
   --blanc:    #FFFFFF;
+  --transparent: transparent;
 
   --font-title: 'Righteous', 'Trebuchet MS', system-ui, sans-serif;
   --font-text:  'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -133,7 +134,7 @@ html { scroll-padding-top: 76px; scrollbar-gutter: stable; }
 .text-link-light { color: var(--braise); font-weight: 700; }
 
 /* Bild-Platzhalter ("slot"): zeigt das Bild, oder einen Hinweis, wenn es fehlt */
-.slot { border-radius: 24px; overflow: hidden; background: var(--graphite); }
+.slot { border-radius: 24px; overflow: hidden; background: var(--transparent); }
 .slot img { width: 100%; height: 100%; object-fit: cover; }
 .placeholder {
   width: 100%; height: 100%; min-height: 160px; display: flex; flex-direction: column;
