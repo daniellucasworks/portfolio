@@ -22,7 +22,7 @@ window.CONTENT = {
         "instagram": "https://www.instagram.com/p/De9fEizCvUJ/?img_index=1",
         "deviantart": "https://www.deviantart.com/daniellucasworks/art/EvilSoul-absorbing-Gargoyle---CSPcontest49-1402440732"
       },
-      "inquiry": false
+      "inquiry": true
     },
     {
       "id": "illustration-02",
@@ -103,13 +103,13 @@ window.CONTENT = {
       "images": [],
       "title": {
         "de": "Mein Original Charakter (2014)",
-        "fr": "",
-        "en": ""
+        "fr": "Mon personnage original (2014)",
+        "en": "My Original Character (2014)"
       },
       "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
+        "de": "Handgemaltes Bild von meinem OC mit Alkoholmarker im Jahr 2014.",
+        "fr": "Dessin peint à la main de mon OC aux feutres alcool en 2014.",
+        "en": "Hand-painted picture of my OC using alcohol markers in 2014."
       },
       "links": {
         "instagram": "https://www.instagram.com/p/DWrXSJZihYM/",
@@ -128,9 +128,9 @@ window.CONTENT = {
         "en": "My Original Character 2026"
       },
       "desc": {
-        "de": "Drawn by hand on a A5 Paper.",
-        "fr": "Dessiné à la main sur une feuille A5.",
-        "en": "Drawn by hand on A5 paper."
+        "de": "Handgemaltes Bild mit dem Bleistift auf einem A5 Papier",
+        "fr": "Dessin réalisé à la main au crayon sur une feuille A5",
+        "en": "Hand-drawn picture with pencil on A5 paper"
       },
       "links": {
         "instagram": "https://www.instagram.com/stories/highlights/18206164177330559/",
@@ -145,15 +145,17 @@ window.CONTENT = {
       "images": [],
       "title": {
         "de": "Afonso Mesquita Mara - Ostheopatin - Visiten Karte",
-        "fr": "",
-        "en": ""
+        "fr": "Afonso Mesquita Mara - Ostéopathe - Carte de visite",
+        "en": "Afonso Mesquita Mara - Osteopath - Business Card"
       },
       "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
+        "de": "Meine Klientin hat mir den Auftrag gegeben für Sie ihre Visitenkarten zu erstellen.\nIch habe den ganzen Prozesse auf [Behance](https://www.behance.net/gallery/256918037/Carte-de-visite-ID-visuelle-Mme-Afonso-M-Ostopathe) veröffentlicht.",
+        "fr": "Ma cliente m’a chargé de créer ses cartes de visite.\nJ’ai publié le suivi de l’ensemble du processus sur [Behance](https://www.behance.net/gallery/256918037/Carte-de-visite-ID-visuelle-Mme-Afonso-M-Ostopathe).",
+        "en": "My client has asked me to create her business cards.\nI have posted the entire process on [Behance](https://www.behance.net/gallery/256918037/Carte-de-visite-ID-visuelle-Mme-Afonso-M-Ostopathe)."
       },
-      "links": {},
+      "links": {
+        "behance": "https://www.behance.net/gallery/256918037/Carte-de-visite-ID-visuelle-Mme-Afonso-M-Ostopathe"
+      },
       "inquiry": true
     },
     {
@@ -203,16 +205,17 @@ window.CONTENT = {
       "images": [],
       "title": {
         "de": "Fern von Frieren - Stolzepose",
-        "fr": "Fern de Frieren - pose fière",
-        "en": "Fern from Frieren – Prideful Stance"
+        "fr": "Loin d’avoir froid : une pose fière",
+        "en": "Far from freezing – a proud pose"
       },
       "desc": {
-        "de": "Ich übe täglich und zu dieser zeit war ich beschäftigt the feminine Anatomie zu studieren. Dabei dachte ich mir vermiche ich einige Referenzen. Die eine Referenz war eine frau in der selben pose wie Fern und die andere Referenz ist Fern von dem Anime Frieren.",
-        "fr": "Je m’entraîne tous les jours et, à cette époque, j’étais occupé à étudier l’anatomie féminine. Ce faisant, j’ai pensé que j’allais mélanger quelques références. L’une des références était une femme dans la même pose que Fern, et l’autre référence était Fern de l’anime Frieren.",
-        "en": "I practice every day, and at that time, I was busy studying female anatomy. While doing so, I thought I'd mix in a few references. One reference was a woman in the same pose as Fern, and the other reference is Fern from the anime Frieren."
+        "de": "Ich übe täglich und zu dieser zeit war ich beschäftigt the feminine Anatomie zu studieren. Dabei dachte ich mir vermiche ich einige Referenzen. Die eine Referenz war eine frau in der selben pose wie Fern und die andere Referenz ist Fern von dem Anime Frieren. Dieses Fanart wurde auf CSP erschaffen.",
+        "fr": "Je m’entraîne tous les jours et, à cette époque, j’étais occupé à étudier l’anatomie féminine. Ce faisant, j’ai pensé mélanger quelques références. L’une des références était une femme dans la même pose que Fern et l’autre référence est Fern de l’anime Frieren. Ce fanart a été créé sur CSP.",
+        "en": "I practice every day, and at that time I was busy studying female anatomy. While doing so, I thought I would combine a few references. One reference was a woman in the same pose as Fern, and the other reference is Fern from the anime Frieren. This fan art was created on CSP."
       },
       "links": {
-        "deviantart": "https://www.deviantart.com/daniellucasworks/art/Prideful-Fern---Frieren-Fanart-1391503875"
+        "deviantart": "https://www.deviantart.com/daniellucasworks/art/Prideful-Fern---Frieren-Fanart-1391503875",
+        "artstation": "https://www.artstation.com/daniellucas8"
       },
       "inquiry": true
     },
@@ -238,34 +241,47 @@ window.CONTENT = {
       "id": "gerahmte-02",
       "cat": "gerahmte",
       "file": "gerahmte-02.webp",
-      "images": [],
+      "images": [
+        "gerahmte-02-2.webp",
+        "gerahmte-02-3.webp",
+        "gerahmte-02-4.webp",
+        "gerahmte-02-5.webp",
+        "gerahmte-02-6.webp"
+      ],
       "title": {
-        "de": "DBS Managa cover",
-        "fr": "",
-        "en": ""
+        "de": "Dragon Ball Super Managa cover",
+        "fr": "Couverture du manga Dragon Ball Super",
+        "en": "Dragon Ball Super Manga Cover"
       },
       "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
+        "de": "Der Schwager hat mich gefragt och ich ihm nicht den cover aus dem neusten DBS Manga als Rahmen anfertigen könnte. Ich habe natürlich seine Anfrage mit Freude an genommen, weil ich immer Lust auf Dragon Ball habe. Dieses Bild wurde auf 18x18cm Papier mit Bleistiften und alkohlmarker gemalt.",
+        "fr": "Mon beau-frère m’a demandé si je pouvais lui réaliser un cadre avec la couverture du dernier manga DBS. Bien sûr, j’ai accepté sa demande avec plaisir, car j’ai toujours envie de Dragon Ball. Cette image a été peinte sur du papier de 18 x 18 cm avec des crayons et des feutres à base d’alcool.",
+        "en": "My brother-in-law asked me if I could make him a frame using the cover of the latest DBS manga. Of course, I was happy to accept his request, because I'm always in the mood for Dragon Ball. This picture was drawn on 18x18 cm paper with pencils and alcohol markers."
       },
-      "links": {},
+      "links": {
+        "deviantart": "https://www.deviantart.com/daniellucasworks/art/Dragon-Ball-Super-Manga-Cover-1411427332"
+      },
       "inquiry": true
     },
     {
       "id": "gerahmte-03",
       "cat": "gerahmte",
       "file": "gerahmte-03.webp",
-      "images": [],
+      "images": [
+        "gerahmte-03-2.webp",
+        "gerahmte-03-3.webp",
+        "gerahmte-03-4.webp",
+        "gerahmte-03-5.webp"
+      ],
       "title": {
         "de": "SSJ3 Goku Rosé",
-        "fr": "",
-        "en": ""
+        "fr": "SSJ3 Goku Rosé",
+        "en": "SSJ3 Goku Rosé"
       },
       "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
+        "de": "Ein Geburtstags geschenk für den jüngeren Bruder der sich einen Super Sayajin 3 Goku Black Rosé wünschte. Dieses bild wurde auf einem A4 Papier mir Alkoholmarker gemalt.",
+        "fr": "Un cadeau d’anniversaire pour le petit frère qui voulait un Super Saiyan 3 Goku Black Rosé. Ce dessin a été réalisé sur une feuille A4 avec des feutres à alcool.",
+        "en": "A birthday gift for the younger brother who wanted a Super Saiyan 3 Goku Black Rosé. This picture was drawn on A4 paper with alcohol markers."
       },
       "links": {},
       "inquiry": true
@@ -274,36 +290,52 @@ window.CONTENT = {
       "id": "gerahmte-04",
       "cat": "gerahmte",
       "file": "gerahmte-04.webp",
-      "images": [],
+      "images": [
+        "gerahmte-04-2.webp",
+        "gerahmte-04-3.webp"
+      ],
       "title": {
-        "de": "Weihnachts Sticht als „stainedglass effect“",
-        "fr": "",
-        "en": ""
+        "de": "Weihnachts Stitch als „stainedglass effect“",
+        "fr": "Stitch de Noël avec « effet vitrail »",
+        "en": "Christmas Stitch with a \"stained glass effect\""
       },
       "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
+        "de": "Dieses Bild wurde auf dem Papier eines gekauftem A4 Rahmen (Zellulosepapier) gemalt mit Alkoholmaker.",
+        "fr": "Cette image a été peinte au feutre à alcool sur le papier d’un cadre A4 acheté (papier cellulosique).",
+        "en": "This picture was painted with alcohol markers on the paper of a purchased A4 frame (cellulose paper)."
       },
-      "links": {},
+      "links": {
+        "instagram": "https://www.instagram.com/p/DffFs3dCk0B/?img_index=1",
+        "deviantart": "https://www.deviantart.com/daniellucasworks/art/Christmas-Stitch-Stainedglass-effect--dryart-1407768271"
+      },
       "inquiry": true
     },
     {
       "id": "gerahmte-05",
       "cat": "gerahmte",
       "file": "gerahmte-05.webp",
-      "images": [],
+      "images": [
+        "gerahmte-05-2.webp",
+        "gerahmte-05-3.webp",
+        "gerahmte-05-4.webp",
+        "gerahmte-05-5.webp",
+        "gerahmte-05-6.webp",
+        "gerahmte-05-7.webp",
+        "gerahmte-05-8.webp"
+      ],
       "title": {
         "de": "Gabby und Pandy",
-        "fr": "",
-        "en": ""
+        "fr": "Gabby et Pandy",
+        "en": "Hi, Gabby and Pandy."
       },
       "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
+        "de": "Geschenk für einer meiner Nichten, dass sehr gerne Gabby's Dollhouse serie schaut (Sobald bildschirm Weit erlaubt wurde natürlich). Auf grobem A4 Papier und Alkohol marker gemacht. Ausserdem eine version mit nur Lineart damit die kleine auch eine für sich an malen kann.",
+        "fr": "Cadeau pour l’une de mes nièces qui aime beaucoup regarder la série Gabby’s Dollhouse (dès que le temps d’écran a été autorisé, bien sûr). Réalisé sur du papier A4 épais et avec des feutres à alcool. Il existe également une version avec uniquement des traits, afin que la petite puisse aussi en colorier une elle-même.",
+        "en": "A gift for one of my nieces who really likes to watch the Gabby's Dollhouse series (once screen time was allowed, of course). Done on rough A4 paper with alcohol markers. There is also a version with just line art so that the little one can also color one in herself."
       },
-      "links": {},
+      "links": {
+        "instagram": "https://www.instagram.com/p/DUMOyyQimRT/?img_index=1"
+      },
       "inquiry": true
     },
     {
@@ -313,13 +345,13 @@ window.CONTENT = {
       "images": [],
       "title": {
         "de": "Fröhlicher Cartoon Nicolaus",
-        "fr": "",
-        "en": ""
+        "fr": "Saint-Nicolas de dessin animé joyeux",
+        "en": "Cheerful Cartoon Santa Claus"
       },
       "desc": {
-        "de": "",
-        "fr": "",
-        "en": ""
+        "de": "Als meine Frau das Haus schön Weihnachtlich dekorierte habe ich diesen Cartoonhaten Weihnachtsmann gemalt. Damit es Teil der Dekoratioun werden kann. Es wurde ebbenfalls als Glückwunsch Karte verwandelt (Diese Bilder kommen nach).",
+        "fr": "Pendant que ma femme décorait joliment la maison pour Noël, j’ai peint ce Père Noël de style dessin animé. Pour qu’il puisse faire partie de la décoration. Il a également été transformé en carte de vœux (ces images suivront).",
+        "en": "When my wife decorated the house beautifully for Christmas, I painted this cartoon-style Santa Claus. So that it could become part of the decorations. It was also turned into a greeting card (these pictures will follow)."
       },
       "links": {},
       "inquiry": true
@@ -328,18 +360,22 @@ window.CONTENT = {
       "id": "sticker-01",
       "cat": "sticker",
       "file": "sticker-01.webp",
-      "images": [],
+      "images": [
+        "sticker-01-2.webp"
+      ],
       "title": {
         "de": "Handgemalte Pokémon-Sticker",
         "fr": "Stickers Pokémon peints à la main",
-        "en": "Hand-Painted Pokémon Stickers"
+        "en": "Hand-painted Pokémon stickers"
       },
       "desc": {
-        "de": "Individuelles, handgemaltes Pokémon-Sticker-Set als Geschenk für meinen Cousin – inklusive eines großen Stickers, der nun seine Xbox Series X ziert.",
-        "fr": "Set personnalisé de stickers Pokémon peints à la main créé pour mon cousin, dont un grand format qui décore désormais sa Xbox Series X.",
-        "en": "Custom hand-painted Pokémon sticker set made for my cousin, featuring a large sticker that now customizes his Xbox Series X."
+        "de": "Individuelles, handgemaltes Pokémon-Sticker-Set als Geschenk für meinen Cousin – inklusive eines großen Stickers, der nun seine Xbox Series X ziert. Das zweite Set habe ich für mich selbst angefertigt.",
+        "fr": "Ensemble d’autocollants Pokémon personnalisés et peints à la main, offert à mon cousin – y compris un grand autocollant qui orne désormais sa Xbox Series X. J’ai réalisé le deuxième set pour moi-même.",
+        "en": "Custom, hand-painted Pokémon sticker set as a gift for my cousin – including a large sticker that now adorns his Xbox Series X. I made the second set for myself."
       },
-      "links": {},
+      "links": {
+        "instagram": "https://www.instagram.com/p/DVyhvdwivNF/"
+      },
       "inquiry": true
     },
     {
