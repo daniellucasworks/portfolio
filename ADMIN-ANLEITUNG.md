@@ -35,6 +35,8 @@ Der Token ist dein Schlüssel. Er erlaubt dem Admin, **nur in deinem Repository 
 
 **Leistungen:** *+ Neue Leistung* → Titel, Beschreibung, Preis (+ optional Zusatzzeile) → übersetzen → *Übernehmen*. Der Anfrage-Knopf öffnet das Kontaktformular mit dem Titel der Leistung.
 
+**Seite (Texte und Bilder der Bereiche):** Im Tab *Seite* bearbeitest du Startbereich (Hero) mit Startbild, Portfolio-Überschrift, Einleitung der Leistungen, Manga (Text und bis zu 6 Bilder), Über mich (Text, Badges, Foto), Kontakt und den Google-Titel. Bilder werden wie beim Portfolio in WebP umgewandelt. Wenn du den deutschen Text änderst, setze bei der Übersetzung den Haken *überschreiben*, sonst bleiben alte EN/FR-Texte stehen.
+
 **Veröffentlichen:** Unten erscheint die Leiste *Veröffentlichen*. Sie schreibt alle Änderungen auf einmal nach GitHub. Nach 1 bis 2 Minuten ist die Seite aktualisiert (Ctrl+F5). Bis dahin ist nichts online, du kannst also in Ruhe ändern oder *Verwerfen*.
 
 ## Wichtig

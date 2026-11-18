@@ -24,6 +24,7 @@
   var SOCIAL_NAMES = { instagram: 'Instagram', behance: 'Behance', deviantart: 'DeviantArt', artstation: 'ArtStation',
     etsy: 'Etsy', kofi: 'Ko-fi', patreon: 'Patreon', tiktok: 'TikTok', youtube: 'YouTube', pinterest: 'Pinterest',
     threads: 'Threads', facebook: 'Facebook', x: 'X', linkedin: 'LinkedIn', discord: 'Discord' };
+  var LANGS = ['de', 'fr', 'en'];
   var LANG_NAMES = { de: 'Deutsch', en: 'English', fr: 'Français' };
 
   var st = {
@@ -129,6 +130,9 @@
   }
   function registerExisting(content) {
     st.existing = {};
+    var sl = content.slots || {};
+    ['hero', 'about'].forEach(function (k) { if (sl[k]) st.existing['images/' + sl[k]] = true; });
+    (sl.manga || []).forEach(function (f) { st.existing['images/' + f] = true; });
     (content.works || []).forEach(function (w) {
       st.existing['images/portfolio/' + w.file] = true;
       (w.images || []).forEach(function (f) { st.existing['images/portfolio/' + f] = true; });
@@ -151,6 +155,8 @@
     st.content.categories = st.content.categories || [];
     st.content.works = st.content.works || [];
     st.content.services = st.content.services || [];
+    st.content.texts = st.content.texts || {};
+    if (!st.content.slots) st.content.slots = await detectSlots();
     st.orig = clone(st.content);
     registerExisting(st.content);
     try {
@@ -161,6 +167,20 @@
     $('login').hidden = true; $('app').hidden = false;
     render();
   }
+  // Welche Bilder für Startbild, Über mich und Manga schon im Repo liegen (falls content.js noch keine Liste hat)
+  async function detectSlots() {
+    var slots = { hero: null, about: null, manga: [] };
+    try {
+      var list = await gh(repoPath('/contents/images?ref=' + encodeURIComponent(st.branch)));
+      var names = list.filter(function (f) { return f.type === 'file'; }).map(function (f) { return f.name; });
+      var exts = ['webp', 'jpg', 'jpeg', 'png'];
+      function find(base) { for (var i = 0; i < exts.length; i++) { if (names.indexOf(base + '.' + exts[i]) !== -1) return base + '.' + exts[i]; } return null; }
+      slots.hero = find('hero'); slots.about = find('about');
+      for (var n = 1; n <= (SITE.maxManga || 6); n++) { var f = find('manga-' + pad(n)); if (!f) break; slots.manga.push(f); }
+    } catch (e) { /* Standard: nichts erkannt */ }
+    return slots;
+  }
+
   function logout() {
     try { localStorage.removeItem('dlw-admin-token'); sessionStorage.removeItem('dlw-admin-token'); } catch (e) {}
     location.reload();
@@ -296,7 +316,7 @@
       onclick: function () { translateFields(fields, over.checked, btn); } });
     return el('div', { class: 'a-section' }, [
       el('h3', { text: 'Übersetzung' }),
-      el('p', { class: 'a-hint', text: 'Schreib nur Deutsch. EN und FR füllt der Knopf vor (kostenloser Dienst, nicht perfekt). Du kannst alles in den Tabs ändern.' }),
+      el('p', { class: 'a-hint', text: 'Schreib nur Deutsch. EN und FR füllt der Knopf vor (kostenloser Dienst, nicht perfekt). Schon ausgefüllte Übersetzungen bleiben stehen: Hast du den deutschen Text geändert, setze den Haken „überschreiben“. Alles lässt sich in den Tabs ändern.' }),
       el('div', { class: 'a-toolbar' }, [btn, el('label', { class: 'check', for: 'ow' }, [over, 'vorhandene Übersetzungen überschreiben'])])
     ]);
   }
@@ -305,7 +325,7 @@
   function render() {
     document.querySelectorAll('.a-tabs button').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.tab === st.tab)); });
     var p = $('panel'); p.textContent = '';
-    if (st.tab === 'portfolio') renderPortfolio(p); else renderServices(p);
+    if (st.tab === 'portfolio') renderPortfolio(p); else if (st.tab === 'services') renderServices(p); else renderPage(p);
   }
 
   function thumbUrl(path) { return st.urls[path] || path; }
@@ -364,6 +384,148 @@
       ]));
     });
     p.appendChild(list);
+  }
+
+  /* ------------------------------ Tab "Seite": Texte und Bilder der Bereiche ------------------------------ */
+  var SECTIONS = [
+    { id: 'hero', title: 'Startbereich (Hero)', note: 'Titel, Text, Knöpfe und das grosse Startbild',
+      fields: [['hero.eyebrow', 'Kleine Zeile über dem Titel'], ['hero.title', 'Titel'], ['hero.text', 'Text', 'multi'],
+               ['hero.cta', 'Text Knopf 1 (Anfrage)'], ['hero.cta2', 'Text Knopf 2 (Portfolio)'], ['hero.alt', 'Bildbeschreibung (für Screenreader)']],
+      image: { slot: 'hero', max: 1, label: 'Startbild' } },
+    { id: 'portfolio', title: 'Portfolio – Überschrift', note: 'Die Überschrift über den Werken',
+      fields: [['portfolio.title', 'Überschrift']] },
+    { id: 'services', title: 'Leistungen – Überschrift und Einleitung', note: 'Die Karten selbst bearbeitest du im Tab „Leistungen“',
+      fields: [['services.title', 'Überschrift'], ['services.intro', 'Einleitung', 'multi'], ['services.meta', 'Standard-Zusatzzeile in den Karten']] },
+    { id: 'manga', title: 'Manga', note: 'Eyebrow, Titel, Text und Manga-Bilder',
+      fields: [['manga.eyebrow', 'Kleine Zeile über dem Titel'], ['manga.title', 'Titel'], ['manga.text', 'Text', 'multi']],
+      image: { slot: 'manga', max: SITE.maxManga || 6, multi: true, label: 'Manga-Bilder' } },
+    { id: 'about', title: 'Über mich', note: 'Text, Badges und Foto',
+      fields: [['about.eyebrow', 'Kleine Zeile über dem Titel'], ['about.title', 'Titel'], ['about.text', 'Text', 'multi'],
+               ['about.badge1', 'Badge 1'], ['about.badge2', 'Badge 2'], ['about.alt', 'Bildbeschreibung (für Screenreader)']],
+      image: { slot: 'about', max: 1, label: 'Foto' } },
+    { id: 'contact', title: 'Kontakt', note: 'Überschrift, Text und Beispieltext im Nachrichtenfeld',
+      fields: [['contact.title', 'Überschrift'], ['contact.text', 'Text', 'multi'], ['contact.message.ph', 'Beispieltext im Nachrichtenfeld', 'multi']] },
+    { id: 'meta', title: 'Google: Titel und Beschreibung', note: 'So erscheint die Seite in Suchergebnissen und im Browser-Tab',
+      fields: [['meta.title', 'Seitentitel'], ['meta.description', 'Kurzbeschreibung', 'multi']] }
+  ];
+
+  // aktueller Text eines Schlüssels: Admin-Wert, sonst Standard aus translations.js
+  function textValue(key) {
+    var own = (st.content.texts || {})[key] || {};
+    var o = {};
+    LANGS.forEach(function (l) { o[l] = own[l] || (TR[l] && TR[l][key]) || ''; });
+    return o;
+  }
+  function slotFiles(slot) {
+    var v = (st.content.slots || {})[slot];
+    return slot === 'manga' ? (v || []).slice() : (v ? [v] : []);
+  }
+
+  function renderPage(p) {
+    p.appendChild(el('h2', { text: 'Seite' }));
+    p.appendChild(el('p', { class: 'a-note', text: 'Texte und Bilder der Bereiche der Startseite. Werke und Leistungen haben eigene Tabs.' }));
+    var grid = el('div', { class: 'a-grid' });
+    SECTIONS.forEach(function (sec) {
+      var first = slotFiles(sec.image && sec.image.slot)[0];
+      grid.appendChild(el('div', { class: 'a-card' }, [
+        first ? el('img', { src: thumbUrl('images/' + first), alt: '', loading: 'lazy' }) : null,
+        el('h3', { text: sec.title }),
+        el('p', { class: 'a-meta', text: sec.note }),
+        el('div', { class: 'a-row' }, [el('button', { type: 'button', class: 'btn btn-outline btn-small', text: 'Bearbeiten', onclick: function () { openSectionEditor(sec); } })])
+      ]));
+    });
+    p.appendChild(grid);
+  }
+
+  // Bildliste für Bereiche: items = [{file, blob, url}]
+  function imageList(items, cfg) {
+    var box = el('div', { class: 'a-imgs' });
+    var fileIn = el('input', { type: 'file', accept: 'image/*', hidden: true });
+    var replaceAt = -1;
+    function draw() {
+      box.textContent = '';
+      items.forEach(function (im, i) {
+        box.appendChild(el('div', { class: 'a-img' }, [
+          el('img', { src: im.url, alt: '' }),
+          el('small', { text: cfg.multi ? 'Bild ' + (i + 1) : cfg.label }),
+          el('div', { class: 'a-row' }, [
+            el('button', { type: 'button', title: 'Ersetzen', 'aria-label': 'ersetzen', text: '⟳', onclick: function () { replaceAt = i; fileIn.click(); } }),
+            cfg.multi ? el('button', { type: 'button', title: 'Nach vorne', 'aria-label': 'nach vorne', text: '←', onclick: function () { if (i > 0) { var t = items[i]; items[i] = items[i - 1]; items[i - 1] = t; draw(); } } }) : null,
+            el('button', { type: 'button', title: 'Entfernen', 'aria-label': 'entfernen', text: '×', onclick: function () { items.splice(i, 1); draw(); } })
+          ])
+        ]));
+      });
+      if (items.length < cfg.max) box.appendChild(el('button', { type: 'button', class: 'btn btn-outline btn-small', text: '+ Bild hinzufügen', onclick: function () { replaceAt = -1; fileIn.click(); } }));
+    }
+    fileIn.addEventListener('change', async function () {
+      var f = fileIn.files[0]; fileIn.value = '';
+      if (!f) return;
+      try {
+        var blob = await processImage(f);
+        var item = { file: null, blob: blob, url: URL.createObjectURL(blob) };
+        if (replaceAt < 0 && items.length >= cfg.max && !cfg.multi) replaceAt = items.length - 1;   // Einzelbild: ersetzen
+        if (replaceAt >= 0) items[replaceAt] = item; else if (items.length < cfg.max) items.push(item);
+        toast(f.name + ' → WebP, ' + Math.round(blob.size / 1024) + ' KB', 'ok');
+      } catch (e) { toast('Bild konnte nicht gelesen werden: ' + f.name, 'err'); }
+      draw();
+    });
+    draw();
+    return el('div', {}, [box, fileIn]);
+  }
+
+  function openSectionEditor(sec) {
+    var items = slotFiles(sec.image && sec.image.slot).map(function (f) { return { file: f, blob: null, url: thumbUrl('images/' + f) }; });
+    openEditor(function (d) {
+      d.appendChild(el('h2', { text: sec.title }));
+      d.appendChild(el('p', { class: 'a-hint', text: sec.note }));
+      var lfs = [];
+      var wrap = el('div', { class: 'a-section' });
+      sec.fields.forEach(function (f) {
+        var lf = langField(f[1], textValue(f[0]), { multiline: f[2] === 'multi', hint: f[2] === 'multi' ? 'Leerzeile = neuer Absatz. Links: [Text](https://…)' : '' });
+        lfs.push(lf); wrap.appendChild(lf.root);
+      });
+      d.appendChild(wrap);
+      d.appendChild(translateBar(lfs));
+      if (sec.image) {
+        d.appendChild(el('div', { class: 'a-section' }, [
+          el('h3', { text: sec.image.label }),
+          el('p', { class: 'a-hint', text: 'Wird automatisch in WebP (max. 1600 px) umgewandelt.' }),
+          imageList(items, sec.image)
+        ]));
+      }
+      d.appendChild(el('div', { class: 'a-actions' }, [
+        el('button', { type: 'button', class: 'btn btn-outline btn-small', text: 'Abbrechen', onclick: closeEditor }),
+        el('button', { type: 'button', class: 'btn btn-primary btn-small', text: 'Übernehmen', onclick: function () {
+          try { applySection(sec, lfs, items); closeEditor(); } catch (e) { toast(e.message, 'err'); }
+        } })
+      ]));
+    });
+  }
+
+  function applySection(sec, lfs, items) {
+    sec.fields.forEach(function (f, i) {
+      var v = lfs[i].getAll();
+      if (!v.de) throw new Error('Bitte „' + f[1] + '“ auf Deutsch ausfüllen (oder den Standardtext stehen lassen).');
+      st.content.texts[f[0]] = v;
+    });
+    if (sec.image) {
+      var slot = sec.image.slot, old = slotFiles(slot);
+      var used = {}, n = 0;
+      items.forEach(function (im) { if (im.file) { used[im.file] = true; var m = im.file.match(/^manga-(\d+)\./); if (m) n = Math.max(n, parseInt(m[1], 10)); } });
+      old.forEach(function (f) { var m = f.match(/^manga-(\d+)\./); if (m) n = Math.max(n, parseInt(m[1], 10)); });
+      items.forEach(function (im) {
+        if (!im.file) im.file = slot === 'manga' ? 'manga-' + pad(++n) + '.webp' : slot + '.webp';
+        if (im.blob) queueFile('images/' + im.file, im.blob);
+      });
+      var keep = {}; items.forEach(function (im) { keep[im.file] = true; });
+      old.forEach(function (f) { if (!keep[f]) queueDelete('images/' + f); });
+      st.content.slots = st.content.slots || {};
+      st.content.slots[slot] = slot === 'manga' ? items.map(function (im) { return im.file; }) : (items[0] ? items[0].file : null);
+      // Vorschau des neuen Bildes merken
+      items.forEach(function (im) { if (im.blob) { st.urls['images/' + im.file] = im.url; } });
+    }
+    setDirty(true); render();
+    toast('Übernommen. Mit „Veröffentlichen“ geht es online.', 'ok');
   }
 
   /* ------------------------------ Editor: Werk ------------------------------ */

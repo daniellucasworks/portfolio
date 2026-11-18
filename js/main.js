@@ -21,6 +21,17 @@
      wie vorher mit config.js und den Dateinamen. */
   var CONTENT = window.CONTENT || null;
   var manifest = !!(CONTENT && CONTENT.works && CONTENT.works.length);
+  // Seitentexte aus dem Admin (Tab "Seite") überschreiben die Texte aus translations.js
+  if (CONTENT && CONTENT.texts) {
+    Object.keys(CONTENT.texts).forEach(function (k) {
+      LANGS.forEach(function (L) {
+        var v = CONTENT.texts[k] && CONTENT.texts[k][L];
+        if (v && TEXTS[L]) TEXTS[L][k] = v;
+      });
+    });
+  }
+  // Bilder der Bereiche (hero, about, manga) aus dem Admin; fehlen sie, werden sie wie bisher nach Dateinamen gesucht
+  var slotsData = (CONTENT && CONTENT.slots) || null;
   if (CONTENT) {
     SITE.titles = SITE.titles || {}; SITE.descriptions = SITE.descriptions || {}; SITE.links = SITE.links || {};
     (CONTENT.works || []).forEach(function (w) {
@@ -190,7 +201,9 @@
     for (var i = 0; i < slots.length; i++) {
       var slot = slots[i];
       var name = slot.dataset.slot;
-      var url = await findImage('images/' + name);
+      var url;
+      if (slotsData && name in slotsData) url = slotsData[name] ? 'images/' + slotsData[name] : null;
+      else url = await findImage('images/' + name);
       if (url) {
         var img = document.createElement('img');
         img.src = url;
@@ -210,7 +223,15 @@
   async function loadManga() {
     var grid = document.getElementById('manga-grid');
     var count = 0;
-    for (var i = 1; i <= SITE.maxManga; i++) {
+    if (slotsData && Array.isArray(slotsData.manga)) {
+      // Liste aus dem Admin
+      slotsData.manga.forEach(function (file) {
+        var img = document.createElement('img');
+        img.src = 'images/' + file; img.alt = ''; img.loading = 'lazy'; img.decoding = 'async';
+        grid.appendChild(img);
+        count++;
+      });
+    } else for (var i = 1; i <= SITE.maxManga; i++) {
       var url = await findImage('images/manga-' + pad(i));
       if (!url) break;                 // Lücke in der Nummerierung = Ende
       var img = document.createElement('img');
@@ -642,6 +663,12 @@
     var stage = document.getElementById('lb-stage');
     var img = document.getElementById('lb-img');
 
+    // Tippen auf den dunklen Bereich neben dem Bild schliesst die Grossansicht
+    stage.addEventListener('click', function (e) {
+      if (e.target === stage && !stage.classList.contains('zoomed')) box.close();
+    });
+    box.addEventListener('click', function (e) { if (e.target === box) box.close(); });
+
     // Klick aufs Bild: heranzoomen (an der Klickstelle), nochmal klicken: zurück
     img.addEventListener('click', function (e) {
       if (stage.classList.contains('zoomed')) { setZoom(false); return; }
@@ -738,6 +765,7 @@
       document.documentElement.classList.remove('lb-open');   // Seite darf wieder scrollen
     });
     document.getElementById('lb-close').addEventListener('click', function () { box.close(); });
+    document.getElementById('lb-close2').addEventListener('click', function () { box.close(); });
     setupLightboxControls(box);
     document.getElementById('lb-inquire').addEventListener('click', function () {
       var w = openWork;
