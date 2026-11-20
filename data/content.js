@@ -1,7 +1,64 @@
 /* data/content.js - wird vom Admin (admin.html) geschrieben. Nicht von Hand bearbeiten, ausser du weisst, was du tust. */
 window.CONTENT = {
   "version": 1,
-  "categories": [],
+  "categories": [
+    {
+      "id": "illustration",
+      "label": {
+        "de": "Illustration",
+        "fr": "Illustration",
+        "en": "Illustration"
+      }
+    },
+    {
+      "id": "charakter",
+      "label": {
+        "de": "Charaktere",
+        "fr": "Personnages",
+        "en": "Characters"
+      }
+    },
+    {
+      "id": "branding",
+      "label": {
+        "de": "Branding",
+        "fr": "Branding",
+        "en": "Branding"
+      }
+    },
+    {
+      "id": "poster",
+      "label": {
+        "de": "Poster",
+        "fr": "Affiches",
+        "en": "Posters"
+      }
+    },
+    {
+      "id": "gerahmte",
+      "label": {
+        "de": "Gerahmte Werke",
+        "fr": "Œuvres encadrées",
+        "en": "Framed works"
+      }
+    },
+    {
+      "id": "sticker",
+      "label": {
+        "de": "Sticker",
+        "fr": "Autocollants",
+        "en": "Stickers"
+      }
+    },
+    {
+      "id": "portrait",
+      "label": {
+        "de": "Porträts",
+        "fr": "Portraits",
+        "en": "Portraits"
+      }
+    }
+  ],
   "works": [
     {
       "id": "illustration-01",
@@ -494,5 +551,43 @@ window.CONTENT = {
       "inquiry": true,
       "style": "idea"
     }
-  ]
+  ],
+  "serviceCategories": [],
+  "texts": {
+    "about.eyebrow": {
+      "de": "Über mich",
+      "fr": "À propos",
+      "en": "About"
+    },
+    "about.title": {
+      "de": "Grafikdesigner, der jeden Tag zeichnet.",
+      "fr": "Graphiste, je dessine tous les jours.",
+      "en": "A graphic designer who draws every day."
+    },
+    "about.text": {
+      "de": "Bachelor in Grafikdesign, zu Hause in Luxemburg. Schon als Kind wollte ich eigene Charaktere erschaffen und Geschichten um sie herum bauen. Nach einer Pause während meines Studiums und Jobsuche habe ich Ende Dezember 2025 wieder angefangen und seitdem jeden Tag gezeichnet. Gerade arbeite ich am ersten Kapitel meines eigenen Mangas, das bis Ende des Jahres fertig werden soll.",
+      "fr": "Bachelor en design graphique, installé au Luxembourg. Enfant déjà, je voulais créer mes propres personnages et bâtir des histoires autour d’eux. Après une pause pendant mes études et ma recherche d’emploi, j’ai repris fin décembre 2025 et je dessine depuis chaque jour. Je travaille actuellement sur le premier chapitre de mon propre manga, qui doit être terminé d’ici la fin de l’année.",
+      "en": "Bachelor’s degree in graphic design, based in Luxembourg. Even as a child, I wanted to create my own characters and build stories around them. After a break during university and my job search, I started drawing again at the end of December 2025 and have drawn every day since. I am currently working on the first chapter of my own manga, which I want to finish by the end of this year."
+    },
+    "about.badge1": {
+      "de": "49th International Illustration Contest",
+      "fr": "49th International Illustration Contest",
+      "en": "49th International Illustration Contest"
+    },
+    "about.badge2": {
+      "de": "Konschtfestival Affichen-Concours",
+      "fr": "Concours d’affiches Konschtfestival",
+      "en": "Konschtfestival poster competition"
+    },
+    "about.alt": {
+      "de": "Porträt von Daniel Lucas",
+      "fr": "Portrait de Daniel Lucas",
+      "en": "Portrait of Daniel Lucas"
+    }
+  },
+  "slots": {
+    "hero": "hero.png",
+    "about": "about.jpg",
+    "manga": []
+  }
 };
