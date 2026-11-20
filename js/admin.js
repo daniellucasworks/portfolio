@@ -33,7 +33,8 @@
     newFiles: {},        // neue/ersetzte Dateien: { pfad: Blob }
     delFiles: {},        // zu löschende Dateien: { pfad: true }
     urls: {},            // Vorschau-Adressen neuer Dateien
-    tab: 'portfolio', filter: 'all', dirty: false
+    tab: 'portfolio', filter: 'all', dirty: false,
+    q: '', sort: 'site', page: 1, svcView: 'blocks', svcFilter: 'all'
   };
 
   /* ------------------------------ kleine Helfer ------------------------------ */
@@ -65,10 +66,15 @@
     return TR.de['cat.' + id] || id.charAt(0).toUpperCase() + id.slice(1);
   }
   function allCats() {
-    var ids = (SITE.categories || []).slice();
-    (st.content.categories || []).forEach(function (c) { if (ids.indexOf(c.id) === -1) ids.push(c.id); });
+    var ids = (st.content.categories || []).map(function (c) { return c.id; });
+    (SITE.categories || []).forEach(function (c) { if (ids.indexOf(c) === -1) ids.push(c); });
     return ids;
   }
+  function svcCatName(id) {
+    var own = (st.content.serviceCategories || []).filter(function (c) { return c.id === id; })[0];
+    return own ? (own.label.de || id) : '';
+  }
+  var PER_PAGE = 12, MAX_EXAMPLES = 6;
   function setDirty(v) {
     st.dirty = v;
     $('publish').hidden = !v;
@@ -153,6 +159,13 @@
     st.contentSha = f.sha;
     st.content = parseContent(b64ToText(f.content));
     st.content.categories = st.content.categories || [];
+    // Standard-Kategorien aus translations.js in die Liste übernehmen, damit Namen und Reihenfolge im Admin änderbar sind
+    (SITE.categories || []).forEach(function (id) {
+      if (st.content.categories.some(function (c) { return c.id === id; })) return;
+      var lab = {}; LANGS.forEach(function (l) { lab[l] = (TR[l] && TR[l]['cat.' + id]) || id.charAt(0).toUpperCase() + id.slice(1); });
+      st.content.categories.push({ id: id, label: lab });
+    });
+    st.content.serviceCategories = st.content.serviceCategories || [];
     st.content.works = st.content.works || [];
     st.content.services = st.content.services || [];
     st.content.texts = st.content.texts || {};
@@ -330,32 +343,79 @@
 
   function thumbUrl(path) { return st.urls[path] || path; }
 
+  function norm(x) { return (x || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  function workTitleAny(w) { return LANGS.map(function (l) { return lget(w.title, l); }).join(' '); }
+
+  function pager(p, total, pages) {
+    if (pages <= 1) return;
+    var bar = el('div', { class: 'a-pager' }, [
+      el('button', { type: 'button', class: 'btn btn-outline btn-small', text: '‹ Zurück', disabled: st.page <= 1, onclick: function () { st.page--; render(); window.scrollTo(0, 0); } }),
+      el('span', { text: 'Seite ' + st.page + ' von ' + pages + ' · ' + total + ' Treffer' }),
+      el('button', { type: 'button', class: 'btn btn-outline btn-small', text: 'Weiter ›', disabled: st.page >= pages, onclick: function () { st.page++; render(); window.scrollTo(0, 0); } })
+    ]);
+    p.appendChild(bar);
+  }
+
   function renderPortfolio(p) {
     p.appendChild(el('h2', { text: 'Portfolio' }));
-    var sel = el('select', { 'aria-label': 'Kategorie filtern', onchange: function () { st.filter = sel.value; render(); } });
+    // Überschrift der Portfolio-Sektion (steht auf der Seite direkt unter „Portfolio“)
+    p.appendChild(el('div', { class: 'a-headline' }, [
+      el('span', { class: 'a-note', text: 'Überschrift auf der Seite:' }),
+      el('strong', { text: textValue('portfolio.title').de }),
+      el('button', { type: 'button', class: 'btn btn-outline btn-small', text: 'Überschrift ändern', onclick: function () { openSectionEditor(PORTFOLIO_HEAD); } })
+    ]));
+
+    var sel = el('select', { 'aria-label': 'Kategorie filtern', onchange: function () { st.filter = sel.value; st.page = 1; render(); } });
     sel.appendChild(el('option', { value: 'all', text: 'Alle Kategorien' }));
     allCats().forEach(function (c) { sel.appendChild(el('option', { value: c, text: catName(c) })); });
     sel.value = st.filter;
+    var sortSel = el('select', { 'aria-label': 'Sortierung', onchange: function () { st.sort = sortSel.value; st.page = 1; render(); } }, [
+      el('option', { value: 'site', text: 'Neueste zuerst (wie auf der Seite)' }),
+      el('option', { value: 'old', text: 'Älteste zuerst' }),
+      el('option', { value: 'title', text: 'Name A–Z' })
+    ]);
+    sortSel.value = st.sort;
+    var search = el('input', { type: 'search', placeholder: 'Werk suchen (Name oder Nummer) …', 'aria-label': 'Werk suchen', value: st.q });
+    var timer;
+    search.addEventListener('input', function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () { st.q = search.value; st.page = 1; render(); var s2 = document.querySelector('#panel input[type=search]'); if (s2) { s2.focus(); s2.setSelectionRange(s2.value.length, s2.value.length); } }, 250);
+    });
     p.appendChild(el('div', { class: 'a-toolbar' }, [
-      el('button', { type: 'button', class: 'btn btn-primary', text: '+ Neues Werk', onclick: function () { openWorkEditor(-1); } }), sel,
-      el('span', { class: 'a-note', text: st.content.works.length + ' Werke · Reihenfolge = Reihenfolge auf der Seite' })
+      el('button', { type: 'button', class: 'btn btn-primary', text: '+ Neues Werk', onclick: function () { openWorkEditor(-1); } }),
+      el('button', { type: 'button', class: 'btn btn-outline', text: 'Kategorien verwalten', onclick: function () { openCatManager('work'); } })
     ]));
+    p.appendChild(el('div', { class: 'a-toolbar' }, [search, sel, sortSel]));
+
+    var items = st.content.works.map(function (w, idx) { return { w: w, idx: idx }; });
+    if (st.filter !== 'all') items = items.filter(function (x) { return x.w.cat === st.filter; });
+    var q = norm(st.q).trim();
+    if (q) items = items.filter(function (x) { return norm(workTitleAny(x.w) + ' ' + x.w.id + ' ' + x.w.file + ' ' + catName(x.w.cat)).indexOf(q) !== -1; });
+    if (st.sort === 'old') items.reverse();
+    else if (st.sort === 'title') items.sort(function (a, b) { return norm(lget(a.w.title, 'de') || a.w.id).localeCompare(norm(lget(b.w.title, 'de') || b.w.id)); });
+    var canMove = st.sort === 'site' && !q && st.filter === 'all';
+    var pages = Math.max(1, Math.ceil(items.length / PER_PAGE));
+    if (st.page > pages) st.page = pages;
+    p.appendChild(el('p', { class: 'a-note', text: st.content.works.length + ' Werke insgesamt' + (canMove ? ' · Reihenfolge = Reihenfolge auf der Seite (ändern mit ↑ ↓)' : ' · ↑ ↓ gibt es nur bei „Neueste zuerst“ ohne Suche und Filter') }));
     var grid = el('div', { class: 'a-grid' });
-    st.content.works.forEach(function (w, idx) {
-      if (st.filter !== 'all' && w.cat !== st.filter) return;
+    items.slice((st.page - 1) * PER_PAGE, st.page * PER_PAGE).forEach(function (x) {
+      var w = x.w, idx = x.idx;
       var title = lget(w.title, 'de') || '(ohne Titel)';
+      var row = [el('button', { type: 'button', class: 'btn btn-outline btn-small', text: 'Bearbeiten', onclick: function () { openWorkEditor(idx); } })];
+      if (canMove) {
+        row.push(el('button', { type: 'button', class: 'btn btn-outline btn-small', 'aria-label': 'nach vorne', text: '↑', onclick: function () { move(st.content.works, idx, -1); } }));
+        row.push(el('button', { type: 'button', class: 'btn btn-outline btn-small', 'aria-label': 'nach hinten', text: '↓', onclick: function () { move(st.content.works, idx, 1); } }));
+      }
       grid.appendChild(el('div', { class: 'a-card' }, [
         el('img', { src: thumbUrl('images/portfolio/' + w.file), alt: '', loading: 'lazy' }),
         el('h3', { text: title }),
         el('p', { class: 'a-meta' }, [el('span', { class: 'a-badge', text: catName(w.cat) }), ' ' + w.file + ((w.images || []).length ? ' +' + w.images.length : '')]),
-        el('div', { class: 'a-row' }, [
-          el('button', { type: 'button', class: 'btn btn-outline btn-small', text: 'Bearbeiten', onclick: function () { openWorkEditor(idx); } }),
-          el('button', { type: 'button', class: 'btn btn-outline btn-small', 'aria-label': 'nach vorne', text: '↑', onclick: function () { move(st.content.works, idx, -1); } }),
-          el('button', { type: 'button', class: 'btn btn-outline btn-small', 'aria-label': 'nach hinten', text: '↓', onclick: function () { move(st.content.works, idx, 1); } })
-        ])
+        el('div', { class: 'a-row' }, row)
       ]));
     });
+    if (!items.length) p.appendChild(el('p', { class: 'a-hint', text: 'Nichts gefunden.' }));
     p.appendChild(grid);
+    pager(p, items.length, pages);
   }
 
   function move(arr, idx, d) {
@@ -364,26 +424,143 @@
     setDirty(true); render();
   }
 
+  /* ------------------------------ Kategorien verwalten (Werke und Leistungen) ------------------------------ */
+  function openCatManager(kind) {
+    var isWork = kind === 'work';
+    var list = isWork ? st.content.categories : st.content.serviceCategories;
+    var rows = list.map(function (c) { return { id: c.id, label: c.label, lf: null }; });
+    function used(id) {
+      return (isWork ? st.content.works : st.content.services).filter(function (x) { return x.cat === id; }).length;
+    }
+    openEditor(function (d) {
+      d.appendChild(el('h2', { text: isWork ? 'Portfolio-Kategorien' : 'Gruppen der Leistungen' }));
+      d.appendChild(el('p', { class: 'a-hint', text: isWork
+        ? 'Namen ändern ist jederzeit möglich: Alle Werke bleiben dabei in ihrer Kategorie, es gibt keine alten Namen, die irgendwo hängen bleiben. Die Reihenfolge hier ist auch die Reihenfolge der Filterknöpfe auf der Seite. Löschen geht nur bei leeren Kategorien.'
+        : 'Gruppen wie „Branding“ oder „Illustration“. Auf der Seite erscheinen Filterknöpfe und die Leistungen sind nach Gruppen geordnet. Beim Löschen einer Gruppe landen ihre Leistungen unter „Weitere“.' }));
+      var box = el('div', { class: 'a-catlist' });
+      d.appendChild(box);
+      var bar = el('div', {});
+      d.appendChild(bar);
+      function draw() {
+        box.textContent = ''; var lfs = [];
+        rows.forEach(function (r, i) {
+          r.lf = langField('Name', r.label);
+          lfs.push(r.lf);
+          var n = r.id ? used(r.id) : 0;
+          var del = el('button', { type: 'button', class: 'btn btn-outline btn-small', text: 'Löschen', onclick: function () {
+            syncLabels();
+            if (r.id && n && isWork) { toast('„' + (r.label.de || r.id) + '“ enthält noch ' + n + ' Werk(e). Erst die Werke in eine andere Kategorie verschieben.', 'err'); return; }
+            if (r.id && n && !confirm(n + ' Leistung(en) verlieren diese Gruppe. Trotzdem löschen?')) return;
+            rows.splice(i, 1); draw();
+          } });
+          box.appendChild(el('div', { class: 'a-catrow' }, [
+            el('div', { class: 'a-row' }, [
+              el('strong', { text: (i + 1) + '.' }),
+              el('span', { class: 'a-note', text: r.id ? n + (isWork ? ' Werk(e)' : ' Leistung(en)') : 'neu' }),
+              el('span', { style: 'flex:1' }),
+              el('button', { type: 'button', class: 'btn btn-outline btn-small', 'aria-label': 'nach oben', text: '↑', onclick: function () { if (i > 0) { syncLabels(); var t = rows[i]; rows[i] = rows[i - 1]; rows[i - 1] = t; draw(); } } }),
+              el('button', { type: 'button', class: 'btn btn-outline btn-small', 'aria-label': 'nach unten', text: '↓', onclick: function () { if (i < rows.length - 1) { syncLabels(); var t = rows[i]; rows[i] = rows[i + 1]; rows[i + 1] = t; draw(); } } }),
+              del
+            ]),
+            r.lf.root
+          ]));
+        });
+        bar.textContent = '';
+        bar.appendChild(el('button', { type: 'button', class: 'btn btn-outline btn-small', text: '+ Neue ' + (isWork ? 'Kategorie' : 'Gruppe'), onclick: function () { syncLabels(); rows.push({ id: '', label: emptyL(), lf: null }); draw(); } }));
+        bar.appendChild(translateBar(lfs));
+      }
+      function syncLabels() { rows.forEach(function (r) { if (r.lf) r.label = r.lf.getAll(); }); }
+      draw();
+      d.appendChild(el('div', { class: 'a-actions' }, [
+        el('button', { type: 'button', class: 'btn btn-outline btn-small', text: 'Abbrechen', onclick: closeEditor }),
+        el('button', { type: 'button', class: 'btn btn-primary btn-small', text: 'Übernehmen', onclick: function () {
+          try {
+            syncLabels();
+            var out = [], seen = {};
+            rows.forEach(function (r) {
+              if (!r.label.de) throw new Error('Jeder Eintrag braucht einen deutschen Namen.');
+              var id = r.id;
+              if (!id) {
+                id = slugify(r.label.de);
+                if (!id) throw new Error('Der Name „' + r.label.de + '“ braucht Buchstaben oder Zahlen.');
+                var base = id, k = 2; while (seen[id] || list.some(function (c) { return c.id === id; })) id = base + (k++);
+              }
+              seen[id] = true;
+              out.push({ id: id, label: { de: r.label.de, fr: r.label.fr || r.label.de, en: r.label.en || r.label.de } });
+            });
+            // Gelöschte Gruppen: Leistungen davon werden gruppenlos
+            if (!isWork) {
+              var keepIds = {}; out.forEach(function (c) { keepIds[c.id] = true; });
+              st.content.services.forEach(function (s) { if (s.cat && !keepIds[s.cat]) s.cat = ''; });
+              st.content.serviceCategories = out;
+            } else {
+              if (!out.length) throw new Error('Mindestens eine Kategorie muss bleiben.');
+              st.content.categories = out;
+              if (st.filter !== 'all' && !keepWork(out, st.filter)) st.filter = 'all';
+            }
+            setDirty(true); render(); closeEditor();
+            toast('Übernommen. Mit „Veröffentlichen“ geht es online.', 'ok');
+          } catch (e) { toast(e.message, 'err'); }
+        } })
+      ]));
+    });
+  }
+  function keepWork(list, id) { return list.some(function (c) { return c.id === id; }); }
+
+  /* ------------------------------ Tab Leistungen ------------------------------ */
+  function exampleWorks(s) {
+    return (s.examples || []).map(function (id) { return st.content.works.filter(function (w) { return w.id === id; })[0]; }).filter(Boolean);
+  }
   function renderServices(p) {
     p.appendChild(el('h2', { text: 'Leistungen' }));
     p.appendChild(el('div', { class: 'a-toolbar' }, [
-      el('button', { type: 'button', class: 'btn btn-primary', text: '+ Neue Leistung', onclick: function () { openServiceEditor(-1); } })
+      el('button', { type: 'button', class: 'btn btn-primary', text: '+ Neue Leistung', onclick: function () { openServiceEditor(-1); } }),
+      el('button', { type: 'button', class: 'btn btn-outline', text: 'Gruppen verwalten', onclick: function () { openCatManager('service'); } })
     ]));
-    var list = el('div', { class: 'a-list' });
+    var fsel = el('select', { 'aria-label': 'Gruppe filtern', onchange: function () { st.svcFilter = fsel.value; render(); } });
+    fsel.appendChild(el('option', { value: 'all', text: 'Alle Gruppen' }));
+    st.content.serviceCategories.forEach(function (c) { fsel.appendChild(el('option', { value: c.id, text: c.label.de || c.id })); });
+    fsel.appendChild(el('option', { value: '', text: '(ohne Gruppe)' }));
+    fsel.value = st.svcFilter;
+    if (fsel.value !== st.svcFilter) { st.svcFilter = 'all'; fsel.value = 'all'; }
+    var views = el('div', { class: 'a-views' }, [
+      el('button', { type: 'button', text: '▦ Blöcke', 'aria-pressed': String(st.svcView === 'blocks'), onclick: function () { st.svcView = 'blocks'; render(); } }),
+      el('button', { type: 'button', text: '☰ Liste', 'aria-pressed': String(st.svcView === 'list'), onclick: function () { st.svcView = 'list'; render(); } })
+    ]);
+    p.appendChild(el('div', { class: 'a-toolbar' }, [fsel, views,
+      el('span', { class: 'a-note', text: st.svcFilter === 'all' ? 'Reihenfolge = Reihenfolge auf der Seite (innerhalb der Gruppe)' : 'Zum Verschieben „Alle Gruppen“ wählen' })]));
+    var blocks = st.svcView === 'blocks';
+    var wrap = el('div', { class: blocks ? 'a-grid' : 'a-list' });
     st.content.services.forEach(function (s, idx) {
-      list.appendChild(el('div', { class: 'a-card' }, [
-        el('div', {}, [
-          el('h3', { text: lget(s.title, 'de') || '(ohne Titel)' }),
-          el('p', { class: 'a-meta', text: lget(s.price, 'de') || 'kein Preis' + (s.inquiry === false ? ' · ohne Anfrage-Knopf' : '') })
-        ]),
-        el('div', { class: 'a-row' }, [
-          el('button', { type: 'button', class: 'btn btn-outline btn-small', text: 'Bearbeiten', onclick: function () { openServiceEditor(idx); } }),
-          el('button', { type: 'button', class: 'btn btn-outline btn-small', 'aria-label': 'nach oben', text: '↑', onclick: function () { move(st.content.services, idx, -1); } }),
-          el('button', { type: 'button', class: 'btn btn-outline btn-small', 'aria-label': 'nach unten', text: '↓', onclick: function () { move(st.content.services, idx, 1); } })
-        ])
-      ]));
+      if (st.svcFilter !== 'all' && (s.cat || '') !== st.svcFilter) return;
+      var ex = exampleWorks(s);
+      var row = [el('button', { type: 'button', class: 'btn btn-outline btn-small', text: 'Bearbeiten', onclick: function () { openServiceEditor(idx); } })];
+      if (st.svcFilter === 'all') {
+        row.push(el('button', { type: 'button', class: 'btn btn-outline btn-small', 'aria-label': 'nach oben', text: '↑', onclick: function () { move(st.content.services, idx, -1); } }));
+        row.push(el('button', { type: 'button', class: 'btn btn-outline btn-small', 'aria-label': 'nach unten', text: '↓', onclick: function () { move(st.content.services, idx, 1); } }));
+      }
+      var meta = el('p', { class: 'a-meta' }, [
+        s.cat && svcCatName(s.cat) ? el('span', { class: 'a-badge', text: svcCatName(s.cat) }) : null,
+        ' ' + (lget(s.price, 'de') || 'kein Preis') + (s.inquiry === false ? ' · ohne Anfrage-Knopf' : '') + (ex.length ? ' · ' + ex.length + ' Beispiel(e)' : '')
+      ]);
+      var thumbs = ex.length ? el('div', { class: 'a-thumbs' }, ex.slice(0, MAX_EXAMPLES).map(function (w) {
+        return el('img', { src: thumbUrl('images/portfolio/' + w.file), alt: '', title: lget(w.title, 'de') || w.id, loading: 'lazy' });
+      })) : null;
+      if (blocks) {
+        wrap.appendChild(el('div', { class: 'a-card' }, [
+          el('h3', { text: lget(s.title, 'de') || '(ohne Titel)' }), meta,
+          el('p', { class: 'a-desc', text: (lget(s.text, 'de') || '').slice(0, 110) + ((lget(s.text, 'de') || '').length > 110 ? '…' : '') }),
+          thumbs, el('div', { class: 'a-row' }, row)
+        ]));
+      } else {
+        wrap.appendChild(el('div', { class: 'a-card' }, [
+          el('div', {}, [el('h3', { text: lget(s.title, 'de') || '(ohne Titel)' }), meta, thumbs]),
+          el('div', { class: 'a-row' }, row)
+        ]));
+      }
     });
-    p.appendChild(list);
+    if (!st.content.services.length) p.appendChild(el('p', { class: 'a-hint', text: 'Noch keine Leistungen.' }));
+    p.appendChild(wrap);
   }
 
   /* ------------------------------ Tab "Seite": Texte und Bilder der Bereiche ------------------------------ */
@@ -392,8 +569,6 @@
       fields: [['hero.eyebrow', 'Kleine Zeile über dem Titel'], ['hero.title', 'Titel'], ['hero.text', 'Text', 'multi'],
                ['hero.cta', 'Text Knopf 1 (Anfrage)'], ['hero.cta2', 'Text Knopf 2 (Portfolio)'], ['hero.alt', 'Bildbeschreibung (für Screenreader)']],
       image: { slot: 'hero', max: 1, label: 'Startbild' } },
-    { id: 'portfolio', title: 'Portfolio – Überschrift', note: 'Die Überschrift über den Werken',
-      fields: [['portfolio.title', 'Überschrift']] },
     { id: 'services', title: 'Leistungen – Überschrift und Einleitung', note: 'Die Karten selbst bearbeitest du im Tab „Leistungen“',
       fields: [['services.title', 'Überschrift'], ['services.intro', 'Einleitung', 'multi'], ['services.meta', 'Standard-Zusatzzeile in den Karten']] },
     { id: 'manga', title: 'Manga', note: 'Eyebrow, Titel, Text und Manga-Bilder',
@@ -408,6 +583,9 @@
     { id: 'meta', title: 'Google: Titel und Beschreibung', note: 'So erscheint die Seite in Suchergebnissen und im Browser-Tab',
       fields: [['meta.title', 'Seitentitel'], ['meta.description', 'Kurzbeschreibung', 'multi']] }
   ];
+
+  var PORTFOLIO_HEAD = { id: 'portfolio', title: 'Portfolio – Überschrift', note: 'Die Überschrift über den Werken auf der Seite',
+    fields: [['portfolio.title', 'Überschrift']] };
 
   // aktueller Text eines Schlüssels: Admin-Wert, sonst Standard aus translations.js
   function textValue(key) {
@@ -553,15 +731,13 @@
       // Kategorie
       var catSel = el('select', { id: 'w-cat' });
       allCats().forEach(function (c) { catSel.appendChild(el('option', { value: c, text: catName(c) })); });
-      if (isNew) catSel.appendChild(el('option', { value: '__new', text: '+ Neue Kategorie …' }));
+      catSel.appendChild(el('option', { value: '__new', text: '+ Neue Kategorie …' }));
       catSel.value = orig ? orig.cat : (st.filter !== 'all' ? st.filter : catSel.options[0].value);
-      if (orig) catSel.disabled = true;
       var newCat = langField('Name der neuen Kategorie', emptyL());
       newCat.root.hidden = true;
       catSel.addEventListener('change', function () { newCat.root.hidden = catSel.value !== '__new'; });
       d.appendChild(el('label', { for: 'w-cat', text: 'Kategorie' }));
       d.appendChild(catSel);
-      if (orig) d.appendChild(el('p', { class: 'a-hint', text: 'Die Kategorie lässt sich nicht ändern. Dafür Werk neu anlegen.' }));
       d.appendChild(newCat.root);
 
       // Position (nur neu)
@@ -711,6 +887,7 @@
       st.content.categories.push({ id: cat, label: { de: lab.de, fr: lab.fr || lab.de, en: lab.en || lab.de } });
     }
     var work = isNew ? { id: cat + '-' + pad(nextNumber(cat)), cat: cat } : st.content.works[idx];
+    work.cat = cat;   // die Werk-Nummer (id) und die Dateinamen bleiben beim Kategoriewechsel gleich
     // Dateinamen vergeben
     var used = {};
     f.imgs.forEach(function (im) { if (im.file) used[im.file] = true; });
@@ -747,21 +924,65 @@
     queueDelete('images/portfolio/' + w.file);
     (w.images || []).forEach(function (fn) { queueDelete('images/portfolio/' + fn); });
     st.content.works.splice(idx, 1);
+    st.content.services.forEach(function (sv) {
+      if (sv.examples) sv.examples = sv.examples.filter(function (id) { return id !== w.id; });
+    });
     setDirty(true); render();
   }
 
   /* ------------------------------ Editor: Leistung ------------------------------ */
   function openServiceEditor(idx) {
     var isNew = idx < 0;
-    var s = isNew ? { title: emptyL(), text: emptyL(), price: emptyL(), meta: emptyL(), inquiry: true, style: '' } : st.content.services[idx];
+    var s = isNew ? { title: emptyL(), text: emptyL(), price: emptyL(), meta: emptyL(), inquiry: true, style: '', cat: '', examples: [] } : st.content.services[idx];
+    var chosen = (s.examples || []).slice();
     openEditor(function (d) {
       d.appendChild(el('h2', { text: isNew ? 'Neue Leistung' : 'Leistung bearbeiten' }));
-      var fTitle = langField('Titel der Leistung', s.title);
+
+      // Gruppe
+      var catSel = el('select', { id: 's-cat' }, [el('option', { value: '', text: '(ohne Gruppe)' })]);
+      st.content.serviceCategories.forEach(function (c) { catSel.appendChild(el('option', { value: c.id, text: c.label.de || c.id })); });
+      catSel.appendChild(el('option', { value: '__new', text: '+ Neue Gruppe …' }));
+      catSel.value = s.cat || (isNew && st.svcFilter !== 'all' ? st.svcFilter : '');
+      if (catSel.value !== (s.cat || '') && !isNew) catSel.value = '';
+      var newCat = langField('Name der neuen Gruppe', emptyL());
+      newCat.root.hidden = true;
+      catSel.addEventListener('change', function () { newCat.root.hidden = catSel.value !== '__new'; });
+      d.appendChild(el('label', { for: 's-cat', text: 'Gruppe (z. B. Branding, Illustration)' }));
+      d.appendChild(catSel); d.appendChild(newCat.root);
+
+      var fTitle = langField('Titel der Leistung', s.title, { hint: 'Auch Unterpunkte sind möglich, z. B. Gruppe „Branding“ → „Visitenkarten“, „Flyer“, „Erstellung der Markenidentität“.' });
       var fText = langField('Was ist die Leistung genau?', s.text, { multiline: true });
       var fPrice = langField('Preis', s.price, { hint: 'z. B. „ab 50 €“ oder „Auf Anfrage“. Leer = kein Preis.' });
       var fMeta = langField('Zusatzzeile (optional)', s.meta, { hint: 'z. B. Lieferzeit. Leer = Standardtext der Seite („Lieferzeit & Korrekturrunden nach Absprache“).' });
       d.appendChild(fTitle.root); d.appendChild(fText.root); d.appendChild(fPrice.root); d.appendChild(fMeta.root);
-      d.appendChild(translateBar([fTitle, fText, fPrice, fMeta]));
+      d.appendChild(translateBar([fTitle, fText, fPrice, fMeta, newCat]));
+
+      // Beispielwerke aus dem Portfolio
+      var exBox = el('div', { class: 'a-pick' });
+      var exCount = el('p', { class: 'a-hint' });
+      var exQ = el('input', { type: 'search', placeholder: 'Werke suchen …', 'aria-label': 'Beispielwerke suchen' });
+      function drawPick() {
+        exBox.textContent = '';
+        var q = norm(exQ.value).trim();
+        st.content.works.forEach(function (w) {
+          if (q && norm(workTitleAny(w) + ' ' + w.id + ' ' + catName(w.cat)).indexOf(q) === -1) return;
+          var on = chosen.indexOf(w.id) !== -1;
+          exBox.appendChild(el('button', { type: 'button', class: 'a-pickitem', 'aria-pressed': String(on), title: (lget(w.title, 'de') || w.id) + ' (' + catName(w.cat) + ')', onclick: function () {
+            var i = chosen.indexOf(w.id);
+            if (i !== -1) chosen.splice(i, 1);
+            else if (chosen.length >= MAX_EXAMPLES) { toast('Höchstens ' + MAX_EXAMPLES + ' Beispiele pro Leistung.', 'err'); return; }
+            else chosen.push(w.id);
+            drawPick();
+          } }, [el('img', { src: thumbUrl('images/portfolio/' + w.file), alt: '', loading: 'lazy' }), el('span', { text: lget(w.title, 'de') || w.id })]));
+        });
+        exCount.textContent = chosen.length + ' von ' + MAX_EXAMPLES + ' Beispielen gewählt. Besucher tippen auf ein Beispiel und sehen das Werk gross.';
+      }
+      exQ.addEventListener('input', drawPick);
+      drawPick();
+      d.appendChild(el('div', { class: 'a-section' }, [
+        el('h3', { text: 'Beispiele aus dem Portfolio' }), exCount, exQ, exBox
+      ]));
+
       var inq = el('input', { type: 'checkbox', id: 's-inq' }); inq.checked = s.inquiry !== false;
       var hl = el('input', { type: 'checkbox', id: 's-hl' }); hl.checked = s.style === 'idea';
       d.appendChild(el('div', { class: 'a-section' }, [
@@ -776,12 +997,23 @@
       actions.appendChild(el('span', { style: 'flex:1' }));
       actions.appendChild(el('button', { type: 'button', class: 'btn btn-outline btn-small', text: 'Abbrechen', onclick: closeEditor }));
       actions.appendChild(el('button', { type: 'button', class: 'btn btn-primary btn-small', text: 'Übernehmen', onclick: function () {
-        var t = fTitle.getAll();
-        if (!t.de) { toast('Bitte einen deutschen Titel eintragen.', 'err'); return; }
-        var obj = { title: t, text: fText.getAll(), price: fPrice.getAll(), meta: fMeta.getAll(), inquiry: inq.checked, style: hl.checked ? 'idea' : '' };
-        if (isNew) st.content.services.push(obj); else st.content.services[idx] = obj;
-        setDirty(true); render(); closeEditor();
-        toast('Übernommen. Mit „Veröffentlichen“ geht es online.', 'ok');
+        try {
+          var t = fTitle.getAll();
+          if (!t.de) throw new Error('Bitte einen deutschen Titel eintragen.');
+          var cat = catSel.value;
+          if (cat === '__new') {
+            var lab = newCat.getAll();
+            if (!lab.de) throw new Error('Bitte einen Namen für die neue Gruppe eintragen.');
+            cat = slugify(lab.de);
+            if (!cat) throw new Error('Der Gruppenname braucht Buchstaben oder Zahlen.');
+            if (st.content.serviceCategories.some(function (c) { return c.id === cat; })) throw new Error('Diese Gruppe gibt es schon.');
+            st.content.serviceCategories.push({ id: cat, label: { de: lab.de, fr: lab.fr || lab.de, en: lab.en || lab.de } });
+          }
+          var obj = Object.assign({}, isNew ? {} : s, { title: t, text: fText.getAll(), price: fPrice.getAll(), meta: fMeta.getAll(), inquiry: inq.checked, style: hl.checked ? 'idea' : '', cat: cat, examples: chosen.slice() });
+          if (isNew) st.content.services.push(obj); else st.content.services[idx] = obj;
+          setDirty(true); render(); closeEditor();
+          toast('Übernommen. Mit „Veröffentlichen“ geht es online.', 'ok');
+        } catch (e) { toast(e.message, 'err'); }
       } }));
       d.appendChild(actions);
     });

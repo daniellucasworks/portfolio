@@ -39,9 +39,10 @@
       SITE.descriptions[w.id] = w.desc || {};
       SITE.links[w.id] = w.links || {};
     });
-    (CONTENT.categories || []).forEach(function (c) {
-      if (SITE.categories.indexOf(c.id) === -1) SITE.categories.push(c.id);
-    });
+    // Reihenfolge der Kategorien: so, wie sie im Admin sortiert wurden; unbekannte Standard-Kategorien dahinter
+    var catOrder = (CONTENT.categories || []).map(function (c) { return c.id; });
+    SITE.categories.forEach(function (c) { if (catOrder.indexOf(c) === -1) catOrder.push(c); });
+    SITE.categories = catOrder;
   }
 
   /* =================================================================
@@ -514,16 +515,37 @@
   }
 
   // Leistungskarten aus translations.js bauen: services.p1, p2, p3 ... und services.idea
+  var svcFilter = 'all';
   function buildServices() {
     var box = document.getElementById('services-cards');
     if (!box) return;
+    var fbox = document.getElementById('services-filters');
     box.textContent = '';
-    function card(title, text, meta, price, ctaText, highlight) {
+    if (fbox) { fbox.textContent = ''; fbox.hidden = true; }
+    function card(title, text, meta, price, ctaText, highlight, examples) {
       var c = document.createElement('article');
       c.className = 'card' + (highlight ? ' card-idea' : '');
       var h = document.createElement('h3'); h.textContent = title; c.appendChild(h);
       var p = document.createElement('p'); p.textContent = text; c.appendChild(p);
       if (meta)  { var pm = document.createElement('p'); pm.className = 'muted'; pm.textContent = meta; c.appendChild(pm); }
+      if (examples && examples.length) {
+        var ex = document.createElement('div'); ex.className = 'svc-examples';
+        var lab = document.createElement('span'); lab.className = 'svc-ex-label'; lab.textContent = t('services.examples'); ex.appendChild(lab);
+        var row = document.createElement('div'); row.className = 'svc-ex-row';
+        examples.forEach(function (cw) {
+          var b = document.createElement('button'); b.type = 'button'; b.className = 'svc-ex';
+          var name = pick(cw.title) || catLabel(cw.cat);
+          b.setAttribute('aria-label', name); b.title = name;
+          var im = document.createElement('img'); im.src = 'images/portfolio/' + cw.file; im.alt = ''; im.loading = 'lazy'; im.decoding = 'async';
+          b.appendChild(im);
+          b.addEventListener('click', function () {
+            var w = works.filter(function (x) { return x.id === cw.id; })[0];
+            if (w) openLightbox(w);
+          });
+          row.appendChild(b);
+        });
+        ex.appendChild(row); c.appendChild(ex);
+      }
       if (price) { var pp = document.createElement('p'); pp.className = 'price'; pp.textContent = price; c.appendChild(pp); }
       if (ctaText) {
         var a = document.createElement('a');
@@ -535,13 +557,47 @@
     }
     // Neu: Leistungen aus data/content.js (vom Admin gepflegt)
     if (CONTENT && CONTENT.services && CONTENT.services.length) {
-      CONTENT.services.forEach(function (s) {
+      var groups = (CONTENT.serviceCategories || []).filter(function (g) {
+        return CONTENT.services.some(function (s) { return s.cat === g.id; });
+      });
+      var byId = {};
+      (CONTENT.works || []).forEach(function (w) { byId[w.id] = w; });
+      if (svcFilter !== 'all' && !groups.some(function (g) { return g.id === svcFilter; })) svcFilter = 'all';
+      function draw(s) {
+        var ex = (s.examples || []).map(function (id) { return byId[id]; }).filter(Boolean);
         card(pick(s.title), pick(s.text),
              pick(s.meta) || (s.style === 'idea' ? '' : t('services.meta')),
              pick(s.price),
              s.inquiry === false ? '' : t('services.cta'),
-             s.style === 'idea');
+             s.style === 'idea', ex);
+      }
+      function heading(txt) {
+        var h = document.createElement('h3'); h.className = 'svc-group'; h.textContent = txt; box.appendChild(h);
+      }
+      if (groups.length && fbox) {
+        ['all'].concat(groups.map(function (g) { return g.id; })).forEach(function (id) {
+          var b = document.createElement('button'); b.type = 'button';
+          var g = groups.filter(function (x) { return x.id === id; })[0];
+          b.textContent = id === 'all' ? t('portfolio.all') : (pick(g.label) || id);
+          b.setAttribute('aria-pressed', String(svcFilter === id));
+          b.addEventListener('click', function () { svcFilter = id; buildServices(); });
+          fbox.appendChild(b);
+        });
+        fbox.hidden = false;
+      }
+      if (!groups.length) { CONTENT.services.forEach(draw); return; }
+      if (svcFilter !== 'all') {
+        CONTENT.services.filter(function (s) { return s.cat === svcFilter; }).forEach(draw);
+        return;
+      }
+      // "Alle": nach Gruppen geordnet, mit Zwischenüberschrift
+      groups.forEach(function (g) {
+        var list = CONTENT.services.filter(function (s) { return s.cat === g.id; });
+        if (!list.length) return;
+        heading(pick(g.label) || g.id); list.forEach(draw);
       });
+      var rest = CONTENT.services.filter(function (s) { return !groups.some(function (g) { return g.id === s.cat; }); });
+      if (rest.length) { heading(t('services.other')); rest.forEach(draw); }
       return;
     }
     for (var n = 1; has('services.p' + n + '.title'); n++) {

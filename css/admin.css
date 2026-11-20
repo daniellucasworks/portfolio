@@ -75,3 +75,22 @@ body.admin .btn-outline { background: transparent; color: var(--papier); border-
 body.admin .btn-outline:hover { background: var(--gris); color: var(--noir); }
 body.admin .btn-outline:disabled { opacity: .5; cursor: default; }
 @media (max-width: 700px) { .a-dialog { padding: 16px; } .a-actions { bottom: -16px; } .a-bar-right { margin-left: 0; } }
+
+/* v7: Portfolio-Suche, Kategorien, Leistungen */
+.a-headline { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; background: var(--graphite); border-radius: 12px; padding: 10px 16px; margin: 8px 0 0; }
+.a-toolbar input[type=search] { flex: 1 1 240px; min-width: 200px; }
+.a-pager { display: flex; gap: 16px; align-items: center; justify-content: center; margin: 24px 0; flex-wrap: wrap; }
+.a-pager button:disabled { opacity: .4; cursor: default; }
+.a-catrow { border: 1px solid var(--graphite); border-radius: 12px; padding: 12px; margin-top: 12px; }
+.a-catrow .a-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.a-views { display: inline-flex; gap: 6px; }
+.a-views button { font: 700 14px var(--font-text); padding: 8px 14px; border-radius: 8px; border: 2px solid var(--graphite); background: transparent; color: var(--gris); cursor: pointer; }
+.a-views button[aria-pressed="true"] { background: var(--gris); color: var(--noir); border-color: var(--gris); }
+.a-desc { color: var(--gris); font-size: 14px; margin: 0; }
+.a-thumbs { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.a-thumbs img { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; }
+.a-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; max-height: 300px; overflow: auto; margin-top: 10px; padding: 4px; }
+.a-pickitem { display: flex; flex-direction: column; gap: 4px; background: var(--graphite); border: 2px solid transparent; border-radius: 10px; padding: 6px; cursor: pointer; color: var(--papier); font: 13px var(--font-text); text-align: left; }
+.a-pickitem img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; }
+.a-pickitem span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.a-pickitem[aria-pressed="true"] { border-color: var(--orange); background: #3a2a25; }
