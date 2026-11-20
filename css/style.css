@@ -30,6 +30,7 @@
   --graphite: #2B303B;  /* Graphite: Karten auf dunkel           */
   --papier:   #F7F7F9;  /* Papier: sehr helle Flächen            */
   --blanc:    #FFFFFF;
+  --transparent:    transparent;
 
   --font-title: 'Righteous', 'Trebuchet MS', system-ui, sans-serif;
   --font-text:  'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -138,7 +139,7 @@ html { scroll-padding-top: 76px; scrollbar-gutter: stable; }
 .placeholder {
   width: 100%; height: 100%; min-height: 160px; display: flex; flex-direction: column;
   align-items: center; justify-content: center; text-align: center;
-  padding: 16px; gap: 4px; color: var(--gris); font-size: 15px; background: var(--graphite);
+  padding: 16px; gap: 4px; color: var(--gris); font-size: 15px; background: var(--transparent);
 }
 .placeholder b { font-size: 16px; color: var(--papier); word-break: break-all; }
 
