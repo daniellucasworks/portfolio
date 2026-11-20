@@ -371,3 +371,19 @@ html.lb-open, html.lb-open body { overflow: hidden; }           /* Seite dahinte
 .svc-ex { width: 64px; height: 64px; padding: 0; border: 2px solid transparent; border-radius: 10px; overflow: hidden; cursor: pointer; background: var(--graphite); }
 .svc-ex img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .svc-ex:hover, .svc-ex:focus-visible { border-color: var(--orange); }
+
+/* Werk-Ansicht (Lightbox): sanftes Öffnen und Schließen */
+.lightbox {
+  opacity: 0; transform: translateY(24px) scale(.97);
+  transition: opacity .28s ease, transform .28s ease, overlay .28s allow-discrete, display .28s allow-discrete;
+}
+.lightbox[open] { opacity: 1; transform: none; }
+.lightbox::backdrop { opacity: 0; transition: opacity .28s ease, overlay .28s allow-discrete, display .28s allow-discrete; }
+.lightbox[open]::backdrop { opacity: 1; }
+@starting-style {
+  .lightbox[open] { opacity: 0; transform: translateY(24px) scale(.97); }
+  .lightbox[open]::backdrop { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lightbox, .lightbox::backdrop { transition: none; transform: none; }
+}
