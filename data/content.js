@@ -613,11 +613,30 @@ window.CONTENT = {
       "de": "Illustration von Daniel Lucas",
       "fr": "Illustration de Daniel Lucas",
       "en": "Illustration by Daniel Lucas"
+    },
+    "manga.eyebrow": {
+      "de": "Eigenes Projekt",
+      "fr": "Projet personnel",
+      "en": "Personal project"
+    },
+    "manga.title": {
+      "de": "Kôngo no Kokoro",
+      "fr": "Kôngo no Kokoro",
+      "en": "Kôngo no Kokoro"
+    },
+    "manga.text": {
+      "de": "Um seinem Großvater zu beweisen, dass er bereit für seine wahre Bestimmung ist, stellt sich ein junger Kämpfer einem gnadenlosen Kampfkunst-Turnier. Doch im Ring wartet weit mehr als nur der Kampf um den Sieg.\n\nDas Storyboard ist fertig, die Seiten entstehen gerade in Clip Studio Paint. Fortschritt auf meinen Socials verfolgen:",
+      "fr": "Pour prouver à son grand-père qu’il est prêt à accomplir sa véritable destinée, un jeune combattant se lance dans un tournoi d’arts martiaux impitoyable. Mais sur le ring, l’enjeu dépasse de loin la simple victoire.\n\nLe storyboard est terminé, les pages sont en cours dans Clip Studio Paint. Suis l’avancement sur mes réseaux :",
+      "en": "To prove to his grandfather that he is ready to fulfil his true destiny, a young fighter enters a ruthless martial arts tournament. Yet inside the arena, far more is at stake than mere victory.\n\nThe storyboard is finished and the pages are now taking shape in Clip Studio Paint. Follow the progress on my socials:"
     }
   },
   "slots": {
     "hero": "hero.webp",
     "about": "about.jpg",
-    "manga": []
+    "manga": [
+      "manga-01.webp",
+      "manga-02.webp",
+      "manga-03.webp"
+    ]
   }
 };
