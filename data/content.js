@@ -583,10 +583,40 @@ window.CONTENT = {
       "de": "Porträt von Daniel Lucas",
       "fr": "Portrait de Daniel Lucas",
       "en": "Portrait of Daniel Lucas"
+    },
+    "hero.eyebrow": {
+      "de": "Illustration · Charaktere · Branding",
+      "fr": "Illustration · Personnages · Branding",
+      "en": "Illustration · Characters · Branding"
+    },
+    "hero.title": {
+      "de": "Illustrationen mit Charakter.",
+      "fr": "Des illustrations qui ont du caractère.",
+      "en": "Illustration with character."
+    },
+    "hero.text": {
+      "de": "Anime- und Manga-Illustration, Poster und kleines Branding. Aus Luxemburg, für Kunden in ganz Europa.",
+      "fr": "Illustration de style anime et manga, affiches et petit branding. Depuis le Luxembourg, pour des clients partout en Europe.",
+      "en": "Anime and manga illustration, posters and small-scale branding. Based in Luxembourg, working with clients across Europe."
+    },
+    "hero.cta": {
+      "de": "Anfrage senden",
+      "fr": "Envoyer une demande",
+      "en": "Send a request"
+    },
+    "hero.cta2": {
+      "de": "Portfolio ansehen",
+      "fr": "Voir le portfolio",
+      "en": "View portfolio"
+    },
+    "hero.alt": {
+      "de": "Illustration von Daniel Lucas",
+      "fr": "Illustration de Daniel Lucas",
+      "en": "Illustration by Daniel Lucas"
     }
   },
   "slots": {
-    "hero": "hero.png",
+    "hero": "hero.webp",
     "about": "about.jpg",
     "manga": []
   }
