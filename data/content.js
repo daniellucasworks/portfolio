@@ -556,28 +556,28 @@ window.CONTENT = {
   "texts": {
     "about.eyebrow": {
       "de": "Über mich",
-      "fr": "À propos",
-      "en": "About"
+      "fr": "À propos de moi",
+      "en": "About me"
     },
     "about.title": {
       "de": "Grafikdesigner, der jeden Tag zeichnet.",
-      "fr": "Graphiste, je dessine tous les jours.",
-      "en": "A graphic designer who draws every day."
+      "fr": "Graphiste qui dessine tous les jours.",
+      "en": "Graphic designer who draws every day."
     },
     "about.text": {
       "de": "Bachelor in Grafikdesign, zu Hause in Luxemburg. Schon als Kind wollte ich eigene Charaktere erschaffen und Geschichten um sie herum bauen. Nach einer Pause während meines Studiums und Jobsuche habe ich Ende Dezember 2025 wieder angefangen und seitdem jeden Tag gezeichnet. Gerade arbeite ich am ersten Kapitel meines eigenen Mangas, das bis Ende des Jahres fertig werden soll.",
-      "fr": "Bachelor en design graphique, installé au Luxembourg. Enfant déjà, je voulais créer mes propres personnages et bâtir des histoires autour d’eux. Après une pause pendant mes études et ma recherche d’emploi, j’ai repris fin décembre 2025 et je dessine depuis chaque jour. Je travaille actuellement sur le premier chapitre de mon propre manga, qui doit être terminé d’ici la fin de l’année.",
-      "en": "Bachelor’s degree in graphic design, based in Luxembourg. Even as a child, I wanted to create my own characters and build stories around them. After a break during university and my job search, I started drawing again at the end of December 2025 and have drawn every day since. I am currently working on the first chapter of my own manga, which I want to finish by the end of this year."
+      "fr": "Licence en design graphique, basée au Luxembourg. Déjà enfant, je voulais créer mes propres personnages et construire des histoires autour d’eux. Après une pause pendant mes études et ma recherche d’emploi, j’ai repris fin décembre 2025 et, depuis, je dessine tous les jours. Je travaille actuellement sur le premier chapitre de mon propre manga, qui devrait être terminé d’ici la fin de l’année.",
+      "en": "Bachelor's degree in Graphic Design, based in Luxembourg. Even as a child, I wanted to create my own characters and build stories around them. After a break during my studies and job search, I started again at the end of December 2025 and have been drawing every day since then. I am currently working on the first chapter of my own manga, which should be finished by the end of the year."
     },
     "about.badge1": {
-      "de": "49th International Illustration Contest",
-      "fr": "49th International Illustration Contest",
-      "en": "49th International Illustration Contest"
+      "de": "Bachelor in Grafikdesign (Know-how in Print & Web)",
+      "fr": "Bachelier en design graphique (expertise en impression et Web)",
+      "en": "Bachelor's Degree in Graphic Design (Expertise in Print & Web)"
     },
     "about.badge2": {
-      "de": "Konschtfestival Affichen-Concours",
-      "fr": "Concours d’affiches Konschtfestival",
-      "en": "Konschtfestival poster competition"
+      "de": "ARTSCHOOL for Digital Artists [derzeit im Gange]",
+      "fr": "ARTSCHOOL pour les artistes numériques [en cours]",
+      "en": "ARTSCHOOL for Digital Artists [in progress]"
     },
     "about.alt": {
       "de": "Porträt von Daniel Lucas",
